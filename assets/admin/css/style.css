@@ -651,3 +651,198 @@ label { font-size: 13px !important; font-weight: 600 !important; color: var(--te
 [dir="rtl"] .float-sm-right { float: left !important; }
 
 [dir="rtl"] .stat-card::after { right: auto; left: -24px; }
+
+/* =================================
+   Layout Foundation
+   (Sidebar + navbar + content offsets
+   — replaces need for AdminLTE core CSS)
+   ================================= */
+
+/* Sidebar: fixed full-height panel */
+.main-sidebar {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 250px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1035;
+    transition: transform .28s ease, width .28s ease !important;
+}
+
+/* Top navbar: fixed strip */
+.main-header.navbar {
+    position: fixed !important;
+    top: 0;
+    left: 250px;
+    right: 0;
+    z-index: 1034;
+    transition: left .28s ease, right .28s ease !important;
+}
+
+/* Content wrapper: push below navbar + beside sidebar */
+.content-wrapper {
+    margin-top: 57px !important;
+    margin-left: 250px !important;
+    min-height: calc(100vh - 57px - 46px) !important;
+    transition: margin-left .28s ease, margin-right .28s ease !important;
+}
+
+/* Footer: beside sidebar */
+.main-footer {
+    margin-left: 250px !important;
+    transition: margin-left .28s ease, margin-right .28s ease !important;
+}
+
+/* ── Desktop sidebar-collapse ── */
+@media (min-width: 992px) {
+    body.sidebar-collapse .main-sidebar {
+        width: 4.6rem !important;
+    }
+    body.sidebar-collapse .main-header.navbar {
+        left: 4.6rem !important;
+    }
+    body.sidebar-collapse .content-wrapper,
+    body.sidebar-collapse .main-footer {
+        margin-left: 4.6rem !important;
+    }
+}
+
+/* ── Mobile (< 992 px) ── */
+@media (max-width: 991.98px) {
+    /* Sidebar hidden off left edge */
+    .main-sidebar {
+        transform: translateX(-100%) !important;
+        box-shadow: none !important;
+    }
+    /* Sidebar revealed */
+    body.sidebar-open .main-sidebar {
+        transform: translateX(0) !important;
+        box-shadow: 6px 0 30px rgba(0,0,0,.4) !important;
+    }
+    /* Navbar + content go edge-to-edge */
+    .main-header.navbar {
+        left: 0 !important;
+        right: 0 !important;
+    }
+    .content-wrapper,
+    .main-footer {
+        margin-left: 0 !important;
+    }
+}
+
+/* ── Mobile overlay backdrop ── */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.48);
+    z-index: 1033;
+    cursor: pointer;
+    animation: overlayIn .22s ease;
+}
+body.sidebar-open .sidebar-overlay {
+    display: block;
+}
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Hamburger: consistent size on all screens ── */
+.sidebar-toggle-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+}
+
+/* =================================
+   RTL Layout overrides
+   (these override the earlier RTL block so
+   everything lines up with the new foundation)
+   ================================= */
+
+/* Sidebar on the right */
+[dir="rtl"] .main-sidebar {
+    left: auto !important;
+    right: 0 !important;
+}
+
+/* Navbar spans left edge → start of sidebar */
+[dir="rtl"] .main-header.navbar {
+    left: 0 !important;
+    right: 250px !important;
+}
+
+/* Content has right margin for RTL sidebar */
+[dir="rtl"] .content-wrapper {
+    margin-left: 0 !important;
+    margin-right: 250px !important;
+}
+[dir="rtl"] .main-footer {
+    margin-left: 0 !important;
+    margin-right: 250px !important;
+}
+
+/* RTL desktop collapsed */
+@media (min-width: 992px) {
+    [dir="rtl"] body.sidebar-collapse .main-header.navbar {
+        right: 4.6rem !important;
+        left: 0 !important;
+    }
+    [dir="rtl"] body.sidebar-collapse .content-wrapper,
+    [dir="rtl"] body.sidebar-collapse .main-footer {
+        margin-right: 4.6rem !important;
+        margin-left: 0 !important;
+    }
+    /* Desktop: sidebar always fully visible — no transform */
+    [dir="rtl"] .main-sidebar {
+        transform: none !important;
+        box-shadow: -4px 0 20px rgba(0,0,0,.25) !important;
+    }
+}
+
+/* RTL mobile */
+@media (max-width: 991.98px) {
+    [dir="rtl"] .main-sidebar {
+        transform: translateX(100%) !important;
+        box-shadow: none !important;
+    }
+    [dir="rtl"] body.sidebar-open .main-sidebar {
+        transform: translateX(0) !important;
+        box-shadow: -6px 0 30px rgba(0,0,0,.4) !important;
+    }
+    [dir="rtl"] .main-header.navbar {
+        right: 0 !important;
+        left: 0 !important;
+    }
+    [dir="rtl"] .content-wrapper,
+    [dir="rtl"] .main-footer {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* =================================
+   Dashboard responsive polish
+   ================================= */
+@media (max-width: 767.98px) {
+    /* Tighten table columns on small phones */
+    .table thead th,
+    .table tbody td {
+        padding: 9px 10px !important;
+        font-size: 12.5px !important;
+    }
+    /* Social dash cards: single column on xs */
+    .social-dash-card { margin-bottom: 10px; }
+    /* Stat cards: full width below 480 px */
+}
+@media (max-width: 479.98px) {
+    .col-sm-6 { flex: 0 0 100%; max-width: 100%; }
+}

@@ -60,37 +60,13 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // ── Academy Management ──────────────────────────────
         Route::resource('players', PlayerController::class)
-             ->except(['show'])
-             ->names([
-                 'index'   => 'admin.player.index',
-                 'create'  => 'admin.player.create',
-                 'store'   => 'admin.player.store',
-                 'edit'    => 'admin.player.edit',
-                 'update'  => 'admin.player.update',
-                 'destroy' => 'admin.player.destroy',
-             ]);
+             ->except(['show']);
 
         Route::resource('subscriptions', SubscriptionController::class)
-             ->except(['show'])
-             ->names([
-                 'index'   => 'admin.subscription.index',
-                 'create'  => 'admin.subscription.create',
-                 'store'   => 'admin.subscription.store',
-                 'edit'    => 'admin.subscription.edit',
-                 'update'  => 'admin.subscription.update',
-                 'destroy' => 'admin.subscription.destroy',
-             ]);
+             ->except(['show']);
 
         Route::resource('social', SocialContentController::class)
-             ->except(['show'])
-             ->names([
-                 'index'   => 'admin.social.index',
-                 'create'  => 'admin.social.create',
-                 'store'   => 'admin.social.store',
-                 'edit'    => 'admin.social.edit',
-                 'update'  => 'admin.social.update',
-                 'destroy' => 'admin.social.destroy',
-             ]);
+             ->except(['show']);
 
         Route::patch('social/{social}/mark-published', [SocialContentController::class, 'markPublished'])
              ->name('admin.social.markPublished');
