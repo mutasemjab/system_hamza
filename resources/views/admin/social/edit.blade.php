@@ -7,7 +7,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-7">
-        <form method="POST" action="{{ route('admin.social.update', $social) }}">
+        <form method="POST" action="{{ route('social.update', $social) }}">
             @csrf @method('PUT')
             <div class="card">
                 <div class="card-header">
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.social.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('social.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-right mr-1"></i> رجوع
                     </a>
                     <button type="submit" class="btn btn-primary">

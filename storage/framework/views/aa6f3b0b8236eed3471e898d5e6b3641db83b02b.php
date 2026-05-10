@@ -11,7 +11,7 @@
                 إجمالي اللاعبين: <strong><?php echo e($players->total()); ?></strong>
             </span>
         </div>
-        <a href="<?php echo e(route('admin.player.create')); ?>" class="btn btn-primary">
+        <a href="<?php echo e(route('players.create')); ?>" class="btn btn-primary">
             <i class="fas fa-plus mr-2"></i> إضافة لاعب
         </a>
     </div>
@@ -20,14 +20,14 @@
 
 <div class="card mb-3">
     <div class="card-body" style="padding:14px 22px !important">
-        <form method="GET" action="<?php echo e(route('admin.player.index')); ?>" class="d-flex gap-2" style="gap:10px">
+        <form method="GET" action="<?php echo e(route('players.index')); ?>" class="d-flex gap-2" style="gap:10px">
             <input type="text" name="search" class="form-control" style="max-width:320px"
                    placeholder="بحث بالاسم أو الهاتف..." value="<?php echo e(request('search')); ?>">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-search mr-1"></i> بحث
             </button>
             <?php if(request('search')): ?>
-            <a href="<?php echo e(route('admin.player.index')); ?>" class="btn btn-secondary">
+            <a href="<?php echo e(route('players.index')); ?>" class="btn btn-secondary">
                 <i class="fas fa-times mr-1"></i> إلغاء
             </a>
             <?php endif; ?>
@@ -113,10 +113,10 @@
                         </td>
                         <td>
                             <div class="d-flex" style="gap:6px">
-                                <a href="<?php echo e(route('admin.player.edit', $player)); ?>" class="btn btn-sm btn-primary" title="تعديل">
+                                <a href="<?php echo e(route('players.edit', $player)); ?>" class="btn btn-sm btn-primary" title="تعديل">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form method="POST" action="<?php echo e(route('admin.player.destroy', $player)); ?>"
+                                <form method="POST" action="<?php echo e(route('players.destroy', $player)); ?>"
                                       onsubmit="return confirm('هل أنت متأكد من حذف هذا اللاعب؟')">
                                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                     <button type="submit" class="btn btn-sm btn-danger" title="حذف">

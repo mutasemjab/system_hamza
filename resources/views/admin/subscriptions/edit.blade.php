@@ -7,7 +7,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <form method="POST" action="{{ route('admin.subscription.update', $subscription) }}">
+        <form method="POST" action="{{ route('subscriptions.update', $subscription) }}">
             @csrf @method('PUT')
             <div class="card">
                 <div class="card-header">
@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.subscription.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('subscriptions.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-right mr-1"></i> رجوع
                     </a>
                     <button type="submit" class="btn btn-primary">

@@ -69,7 +69,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
              ->except(['show']);
 
         Route::patch('social/{social}/mark-published', [SocialContentController::class, 'markPublished'])
-             ->name('admin.social.markPublished');
+             ->name('social.markPublished');
     });
 });
 

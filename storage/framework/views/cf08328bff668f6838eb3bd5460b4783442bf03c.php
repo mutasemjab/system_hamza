@@ -78,7 +78,7 @@
 
 <div class="card mb-3">
     <div class="card-body" style="padding:14px 22px !important">
-        <form method="GET" action="<?php echo e(route('admin.subscription.index')); ?>" class="d-flex flex-wrap" style="gap:10px;align-items:center">
+        <form method="GET" action="<?php echo e(route('subscriptions.index')); ?>" class="d-flex flex-wrap" style="gap:10px;align-items:center">
             <input type="text" name="search" class="form-control" style="max-width:260px"
                    placeholder="بحث باسم اللاعب..." value="<?php echo e(request('search')); ?>">
             <select name="status" class="form-control no-select2" style="max-width:180px">
@@ -91,11 +91,11 @@
                 <i class="fas fa-search mr-1"></i> بحث
             </button>
             <?php if(request()->hasAny(['search','status'])): ?>
-            <a href="<?php echo e(route('admin.subscription.index')); ?>" class="btn btn-secondary">
+            <a href="<?php echo e(route('subscriptions.index')); ?>" class="btn btn-secondary">
                 <i class="fas fa-times mr-1"></i> إلغاء
             </a>
             <?php endif; ?>
-            <a href="<?php echo e(route('admin.subscription.create')); ?>" class="btn btn-primary ml-auto">
+            <a href="<?php echo e(route('subscriptions.create')); ?>" class="btn btn-primary ml-auto">
                 <i class="fas fa-plus mr-1"></i> إضافة اشتراك
             </a>
         </form>
@@ -167,10 +167,10 @@
                         </td>
                         <td>
                             <div class="d-flex" style="gap:6px">
-                                <a href="<?php echo e(route('admin.subscription.edit', $sub)); ?>" class="btn btn-sm btn-primary" title="تعديل">
+                                <a href="<?php echo e(route('subscriptions.edit', $sub)); ?>" class="btn btn-sm btn-primary" title="تعديل">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form method="POST" action="<?php echo e(route('admin.subscription.destroy', $sub)); ?>"
+                                <form method="POST" action="<?php echo e(route('subscriptions.destroy', $sub)); ?>"
                                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الاشتراك؟')">
                                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                     <button type="submit" class="btn btn-sm btn-danger" title="حذف">

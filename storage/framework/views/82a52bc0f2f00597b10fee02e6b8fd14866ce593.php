@@ -6,7 +6,7 @@
 <?php $__env->startSection('content'); ?>
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <form method="POST" action="<?php echo e(route('admin.player.store')); ?>" enctype="multipart/form-data">
+        <form method="POST" action="<?php echo e(route('players.store')); ?>" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
             <div class="card">
                 <div class="card-header">
@@ -190,7 +190,7 @@ unset($__errorArgs, $__bag); ?>
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="<?php echo e(route('admin.player.index')); ?>" class="btn btn-secondary">
+                    <a href="<?php echo e(route('players.index')); ?>" class="btn btn-secondary">
                         <i class="fas fa-arrow-right mr-1"></i> رجوع
                     </a>
                     <button type="submit" class="btn btn-primary">

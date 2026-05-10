@@ -10,7 +10,7 @@
         <i class="fas fa-info-circle mr-1"></i>
         تتبع دور كل لاعب في كل نوع من أنواع المحتوى
     </p>
-    <a href="<?php echo e(route('admin.social.create')); ?>" class="btn btn-primary">
+    <a href="<?php echo e(route('social.create')); ?>" class="btn btn-primary">
         <i class="fas fa-plus mr-2"></i> إضافة لاعب للقائمة
     </a>
 </div>
@@ -59,16 +59,16 @@
                 </div>
             </div>
             <div class="d-flex mt-3" style="gap:6px">
-                <form method="POST" action="<?php echo e(route('admin.social.markPublished', $current)); ?>" style="flex:1">
+                <form method="POST" action="<?php echo e(route('social.markPublished', $current)); ?>" style="flex:1">
                     <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                     <button type="submit" class="btn btn-success btn-sm w-100">
                         <i class="fas fa-check mr-1"></i> تم النشر
                     </button>
                 </form>
-                <a href="<?php echo e(route('admin.social.edit', $current)); ?>" class="btn btn-secondary btn-sm">
+                <a href="<?php echo e(route('social.edit', $current)); ?>" class="btn btn-secondary btn-sm">
                     <i class="fas fa-edit"></i>
                 </a>
-                <form method="POST" action="<?php echo e(route('admin.social.destroy', $current)); ?>"
+                <form method="POST" action="<?php echo e(route('social.destroy', $current)); ?>"
                       onsubmit="return confirm('حذف هذا السجل؟')">
                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                     <button type="submit" class="btn btn-danger btn-sm">
@@ -99,10 +99,10 @@
                 </div>
                 <span class="flex-1" style="font-size:13px;font-weight:500"><?php echo e($item->player?->full_name); ?></span>
                 <div class="d-flex" style="gap:4px">
-                    <a href="<?php echo e(route('admin.social.edit', $item)); ?>" class="social-queue-action" title="تعديل">
+                    <a href="<?php echo e(route('social.edit', $item)); ?>" class="social-queue-action" title="تعديل">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <form method="POST" action="<?php echo e(route('admin.social.destroy', $item)); ?>"
+                    <form method="POST" action="<?php echo e(route('social.destroy', $item)); ?>"
                           onsubmit="return confirm('حذف؟')" style="margin:0">
                         <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                         <button type="submit" class="social-queue-action text-danger" title="حذف">

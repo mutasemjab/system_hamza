@@ -46,24 +46,24 @@
                 <li class="nav-header"><?php echo e(__('messages.Academy_Management')); ?></li>
 
                 <li class="nav-item">
-                    <a href="<?php echo e(route('admin.player.index')); ?>"
-                       class="nav-link <?php echo e(request()->routeIs('admin.player.*') ? 'active' : ''); ?>">
+                    <a href="<?php echo e(route('players.index')); ?>"
+                       class="nav-link <?php echo e(request()->routeIs('players.*') ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-running"></i>
                         <p><?php echo e(__('messages.Players')); ?></p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="<?php echo e(route('admin.subscription.index')); ?>"
-                       class="nav-link <?php echo e(request()->routeIs('admin.subscription.*') ? 'active' : ''); ?>">
+                    <a href="<?php echo e(route('subscriptions.index')); ?>"
+                       class="nav-link <?php echo e(request()->routeIs('subscriptions.*') ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-file-invoice-dollar"></i>
                         <p><?php echo e(__('messages.Subscriptions')); ?></p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="<?php echo e(route('admin.social.index')); ?>"
-                       class="nav-link <?php echo e(request()->routeIs('admin.social.*') ? 'active' : ''); ?>">
+                    <a href="<?php echo e(route('social.index')); ?>"
+                       class="nav-link <?php echo e(request()->routeIs('social.*') ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-photo-film"></i>
                         <p><?php echo e(__('messages.Social_Media')); ?></p>
                     </a>

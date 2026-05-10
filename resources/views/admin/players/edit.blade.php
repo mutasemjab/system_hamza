@@ -7,7 +7,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <form method="POST" action="{{ route('admin.player.update', $player) }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('players.update', $player) }}" enctype="multipart/form-data">
             @csrf @method('PUT')
             <div class="card">
                 <div class="card-header">
@@ -105,7 +105,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ route('admin.player.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('players.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-right mr-1"></i> رجوع
                     </a>
                     <button type="submit" class="btn btn-primary">

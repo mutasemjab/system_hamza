@@ -55,7 +55,7 @@
                     <i class="fas fa-photo-film text-accent mr-2"></i>
                     <span class="card-title">دور المحتوى الحالي</span>
                 </div>
-                <a href="<?php echo e(route('admin.social.index')); ?>" class="btn btn-secondary btn-sm">
+                <a href="<?php echo e(route('social.index')); ?>" class="btn btn-secondary btn-sm">
                     عرض الكل <i class="fas fa-arrow-left ml-1"></i>
                 </a>
             </div>
@@ -99,7 +99,7 @@
                     <i class="fas fa-exclamation-triangle text-warning mr-2"></i>
                     <span class="card-title">اشتراكات متأخرة</span>
                 </div>
-                <a href="<?php echo e(route('admin.subscription.index', ['status' => 'late'])); ?>" class="btn btn-secondary btn-sm">
+                <a href="<?php echo e(route('subscriptions.index', ['status' => 'late'])); ?>" class="btn btn-secondary btn-sm">
                     عرض الكل <i class="fas fa-arrow-left ml-1"></i>
                 </a>
             </div>
@@ -114,7 +114,7 @@
                             <strong style="color:var(--danger)"><?php echo e(number_format($sub->remaining_amount, 0)); ?> د.أ</strong>
                         </div>
                     </div>
-                    <a href="<?php echo e(route('admin.subscription.edit', $sub)); ?>" class="btn btn-sm btn-primary">
+                    <a href="<?php echo e(route('subscriptions.edit', $sub)); ?>" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit"></i>
                     </a>
                 </div>
@@ -136,7 +136,7 @@
                     <i class="fas fa-running text-accent mr-2"></i>
                     <span class="card-title">آخر اللاعبين المضافين</span>
                 </div>
-                <a href="<?php echo e(route('admin.player.index')); ?>" class="btn btn-secondary btn-sm">
+                <a href="<?php echo e(route('players.index')); ?>" class="btn btn-secondary btn-sm">
                     عرض الكل <i class="fas fa-arrow-left ml-1"></i>
                 </a>
             </div>
@@ -192,7 +192,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <a href="<?php echo e(route('admin.player.edit', $player)); ?>" class="btn btn-sm btn-primary">
+                                    <a href="<?php echo e(route('players.edit', $player)); ?>" class="btn btn-sm btn-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </td>

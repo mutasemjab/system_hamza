@@ -3,7 +3,11 @@
     "allow": [
       "Bash(php artisan *)",
       "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\enasfashion\" -Recurse -Directory)",
-      "Bash(Select-Object -First 20)"
+      "Bash(Select-Object -First 20)",
+      "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\sys\\\\resources\\\\views\\\\admin\\\\\" -Recurse -Force | Select-Object -Property FullName, PSIsContainer | Sort-Object FullName)",
+      "Bash(Get-Content -Path \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\css\\\\style.css\" -Raw)",
+      "Bash(Measure-Object -Character)",
+      "PowerShell(Get-Item \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\css\\\\style.css\", \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\js\\\\main.js\" | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}})"
     ]
   }
 }

@@ -1,136 +1,246 @@
-/* Sys Admin — main.js */
+/* =============================================================
+   SYS ADMIN — main.js
+   Admin panel JavaScript — sidebar, select2, alerts, forms
+   English (LTR) & Arabic (RTL) aware
+   ============================================================= */
 
-$(function () {
-    var $body = $('body');
-    var $html  = $('html');
+(function () {
+  'use strict';
 
-    // Remove AdminLTE's hold-transition so animations kick in after first paint
-    $body.removeClass('hold-transition');
+  /* ─── Helpers ─────────────────────────────────────────── */
+  const isRTL = () => document.documentElement.dir === 'rtl';
+  const $ = (sel, ctx) => (ctx || document).querySelector(sel);
+  const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
+  const body = document.body;
 
-    // ── Auto-dismiss toasts after 5 s ──
-    setTimeout(function () {
-        $('.alert-toast').fadeOut(400, function () { $(this).remove(); });
-    }, 5000);
+  /* ─────────────────────────────────────────────────────────
+     1. SIDEBAR / PUSHMENU
+     ───────────────────────────────────────────────────────── */
+  function injectOverlay() {
+    if ($('.sidebar-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    overlay.addEventListener('click', closeSidebar);
+    ($('.wrapper') || body).appendChild(overlay);
+  }
 
-    // ── Select2 ──
-    if ($.fn.select2) {
-        $('select:not(.no-select2)').select2({ theme: 'default', width: '100%' });
+  function toggleSidebar() {
+    const mobile = window.innerWidth < 992;
+    if (mobile) {
+      body.classList.toggle('sidebar-open');
+      body.classList.remove('sidebar-collapse');
+    } else {
+      body.classList.toggle('sidebar-collapse');
+      body.classList.remove('sidebar-open');
+      try {
+        localStorage.setItem(
+          'sidebarCollapsed',
+          body.classList.contains('sidebar-collapse') ? '1' : '0'
+        );
+      } catch (_) {}
     }
+  }
 
-    // ── Confirm delete ──
-    $(document).on('click', '[data-confirm]', function (e) {
-        var msg = $(this).data('confirm') || 'Are you sure?';
-        if (!confirm(msg)) { e.preventDefault(); }
-    });
+  function closeSidebar() {
+    body.classList.remove('sidebar-open');
+  }
 
-    // ── Tooltips (Bootstrap 4) ──
-    $('[data-toggle="tooltip"]').tooltip();
+  function restoreSidebarState() {
+    if (window.innerWidth < 992) return;
+    try {
+      if (localStorage.getItem('sidebarCollapsed') === '1') {
+        body.classList.add('hold-transition', 'sidebar-collapse');
+      }
+    } catch (_) {}
+  }
 
-    // ════════════════════════════════════════════
-    // Sidebar — custom pushmenu (no AdminLTE JS)
-    // ════════════════════════════════════════════
+  function initSidebar() {
+    injectOverlay();
 
-    // Inject overlay once
-    if (!$('.sidebar-overlay').length) {
-        $('<div class="sidebar-overlay"></div>').appendTo('.wrapper');
-    }
-
-    function isMobile() {
-        return $(window).width() < 992;
-    }
-
-    function isRTL() {
-        return $html.attr('dir') === 'rtl';
-    }
-
-    function openSidebar() {
-        $body.addClass('sidebar-open');
-    }
-
-    function closeSidebar() {
-        $body.removeClass('sidebar-open');
-    }
-
-    function toggleDesktop() {
-        $body.toggleClass('sidebar-collapse');
-        try {
-            localStorage.setItem('sidebarCollapsed',
-                $body.hasClass('sidebar-collapse') ? '1' : '0');
-        } catch (e) {}
-    }
-
-    // Restore desktop collapse preference
-    if (!isMobile()) {
-        try {
-            if (localStorage.getItem('sidebarCollapsed') === '1') {
-                $body.addClass('sidebar-collapse');
-            }
-        } catch (e) {}
-    }
-
-    // Hamburger / pushmenu click
-    $(document).on('click', '[data-widget="pushmenu"]', function (e) {
+    $$('[data-widget="pushmenu"]').forEach(btn => {
+      btn.addEventListener('click', e => {
         e.preventDefault();
-        if (isMobile()) {
-            $body.hasClass('sidebar-open') ? closeSidebar() : openSidebar();
-        } else {
-            toggleDesktop();
-        }
+        toggleSidebar();
+      });
     });
 
-    // Overlay click closes sidebar
-    $(document).on('click', '.sidebar-overlay', function () {
-        closeSidebar();
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 992) {
+        body.classList.remove('sidebar-open');
+      }
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     2. SELECT2
+     ───────────────────────────────────────────────────────── */
+  function initSelect2() {
+    if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.select2 === 'undefined') return;
+    const jq = window.jQuery;
+
+    jq('select.form-control:not(.no-select2)').each(function () {
+      jq(this).select2({
+        width: '100%',
+        dir: isRTL() ? 'rtl' : 'ltr',
+        dropdownAutoWidth: false,
+      });
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     3. ALERT TOAST AUTO-DISMISS
+     ───────────────────────────────────────────────────────── */
+  function initAlerts() {
+    $$('.alert-toast').forEach(toast => {
+      setTimeout(() => {
+        toast.style.transition = 'opacity .35s ease, transform .35s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-8px)';
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 380);
+      }, 5000);
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     4. RADIO VISUAL SELECTORS (type-option / status-option)
+     ───────────────────────────────────────────────────────── */
+  function initRadioSelectors() {
+    // content_type radios → .type-option
+    $$('input[name="content_type"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        $$('.type-option').forEach(el => el.classList.remove('selected'));
+        radio.closest('.type-option')?.classList.add('selected');
+      });
     });
 
-    // Close sidebar when a nav link is clicked on mobile
-    $(document).on('click', '.main-sidebar .nav-link', function () {
-        if (isMobile()) { closeSidebar(); }
+    // status radios → .status-option  (only the radio-card style ones)
+    $$('.status-option input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        $$('.status-option').forEach(el => el.classList.remove('selected'));
+        radio.closest('.status-option')?.classList.add('selected');
+      });
     });
+  }
 
-    // Clean up mobile state on resize to desktop
-    var resizeTimer;
-    $(window).on('resize', function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () {
-            if (!isMobile()) { closeSidebar(); }
-        }, 150);
+  /* ─────────────────────────────────────────────────────────
+     5. PHOTO UPLOAD PREVIEW
+     ───────────────────────────────────────────────────────── */
+  function initPhotoUpload() {
+    const input = document.getElementById('photo');
+    if (!input) return;
+
+    input.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const placeholder = document.getElementById('photoPlaceholder');
+        const preview     = document.getElementById('photoPreview');
+        if (placeholder) placeholder.style.display = 'none';
+        if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
+      };
+      reader.readAsDataURL(file);
     });
+  }
 
-    // ── Touch swipe to open / close sidebar ──
-    var touchStartX = 0;
-    var touchStartY = 0;
+  /* ─────────────────────────────────────────────────────────
+     6. SUBSCRIPTION REMAINING CALCULATOR
+     ───────────────────────────────────────────────────────── */
+  function initRemainingCalc() {
+    const totalEl = document.getElementById('totalAmount');
+    const paidEl  = document.getElementById('paidAmount');
+    if (!totalEl || !paidEl) return;
 
-    document.addEventListener('touchstart', function (e) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-    }, { passive: true });
+    function calc() {
+      const total     = parseFloat(totalEl.value) || 0;
+      const paid      = parseFloat(paidEl.value)  || 0;
+      const remaining = Math.max(0, total - paid);
+      const pct       = total > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0;
 
-    document.addEventListener('touchend', function (e) {
-        if (!isMobile()) { return; }
-        var dx = e.changedTouches[0].clientX - touchStartX;
-        var dy = e.changedTouches[0].clientY - touchStartY;
+      const display = document.getElementById('remainingDisplay');
+      const bar     = document.getElementById('progressBar');
 
-        // Ignore short or mostly-vertical swipes
-        if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) { return; }
+      if (display) {
+        display.textContent = remaining.toLocaleString() + ' د.أ';
+        display.style.color = remaining > 0 ? 'var(--danger)' : 'var(--success)';
+      }
+      if (bar) {
+        bar.style.width = pct + '%';
+        bar.style.background =
+          pct >= 100 ? 'var(--success)' :
+          pct >= 50  ? 'var(--warning)' :
+                       'var(--danger)';
+      }
+    }
 
-        var rtl = isRTL();
+    totalEl.addEventListener('input', calc);
+    paidEl.addEventListener('input', calc);
+    calc(); // run on load for edit pages
+  }
 
-        if (!rtl) {
-            // LTR: swipe right from left edge → open; swipe left → close
-            if (dx > 0 && touchStartX < 30 && !$body.hasClass('sidebar-open')) {
-                openSidebar();
-            } else if (dx < 0 && $body.hasClass('sidebar-open')) {
-                closeSidebar();
-            }
-        } else {
-            // RTL: swipe left from right edge → open; swipe right → close
-            var vw = window.innerWidth;
-            if (dx < 0 && touchStartX > vw - 30 && !$body.hasClass('sidebar-open')) {
-                openSidebar();
-            } else if (dx > 0 && $body.hasClass('sidebar-open')) {
-                closeSidebar();
-            }
-        }
-    }, { passive: true });
-});
+  /* ─────────────────────────────────────────────────────────
+     7. FORM SUBMIT PROTECTION (loading state on button)
+     ───────────────────────────────────────────────────────── */
+  function initFormProtection() {
+    $$('form').forEach(form => {
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (!submitBtn) return;
+
+      // Skip single-purpose delete forms (they already use onsubmit=confirm)
+      const isDeleteForm = form.querySelector('[name="_method"]')?.value === 'DELETE';
+      if (isDeleteForm) return;
+
+      form.addEventListener('submit', () => {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+        const icon = submitBtn.querySelector('i.fas, i.far, i.fab');
+        if (icon) icon.className = 'fas fa-spinner fa-spin';
+      });
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     8. BOOTSTRAP DROPDOWN — RTL position fix
+     ───────────────────────────────────────────────────────── */
+  function initDropdownFix() {
+    if (!isRTL() || typeof window.jQuery === 'undefined') return;
+    // Bootstrap 4 dropdowns handle rtl via dir attribute; no extra action needed
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     INIT — runs after DOM is ready
+     ───────────────────────────────────────────────────────── */
+  function init() {
+    restoreSidebarState();
+    initSidebar();
+    initAlerts();
+    initRadioSelectors();
+    initPhotoUpload();
+    initRemainingCalc();
+    initFormProtection();
+    // Remove hold-transition class after layout settles
+    setTimeout(() => body.classList.remove('hold-transition'), 50);
+  }
+
+  /* Wait for jQuery (loaded after this script in the layout) then init Select2 */
+  function waitForJQuery(attempts) {
+    if (typeof window.jQuery !== 'undefined') {
+      // jQuery is ready — wire up Select2 after DOM is ready
+      window.jQuery(function () { initSelect2(); });
+      return;
+    }
+    if (attempts > 0) {
+      setTimeout(() => waitForJQuery(attempts - 1), 80);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Select2 depends on jQuery which loads after this file
+  waitForJQuery(20);
+
+})();
