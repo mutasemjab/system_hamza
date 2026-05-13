@@ -10,12 +10,14 @@ class SocialContent extends Model
     use HasFactory;
 
     protected $fillable = [
-        'player_id', 'content_type', 'status', 'published_at', 'sort_order', 'notes',
+        'player_id', 'content_type', 'custom_description', 'scheduled_date',
+        'status', 'published_at', 'sort_order', 'notes',
     ];
 
     protected $casts = [
-        'published_at' => 'date',
-        'sort_order'   => 'integer',
+        'published_at'   => 'date',
+        'scheduled_date' => 'date',
+        'sort_order'     => 'integer',
     ];
 
     public static array $types = [
@@ -31,14 +33,19 @@ class SocialContent extends Model
         return $this->belongsTo(Player::class);
     }
 
+    /* ── Accessors ── */
+
     public function getTypeLabelAttribute(): string
     {
-        return self::$types[$this->content_type]['label'] ?? $this->content_type;
+        if ($this->custom_description) {
+            return $this->custom_description;
+        }
+        return self::$types[$this->content_type]['label'] ?? ($this->content_type ?? '—');
     }
 
     public function getTypeIconAttribute(): string
     {
-        return self::$types[$this->content_type]['icon'] ?? 'fa-circle';
+        return self::$types[$this->content_type]['icon'] ?? 'fas fa-calendar-alt';
     }
 
     public function getTypeColorAttribute(): string
@@ -54,5 +61,17 @@ class SocialContent extends Model
             'published' => 'تم النشر',
             default     => $this->status,
         };
+    }
+
+    /* ── Scopes ── */
+
+    public function scopeScheduled($query)
+    {
+        return $query->whereNull('content_type')->whereNotNull('scheduled_date');
+    }
+
+    public function scopeTyped($query)
+    {
+        return $query->whereNotNull('content_type');
     }
 }

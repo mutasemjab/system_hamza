@@ -11,9 +11,14 @@
         <i class="fas fa-info-circle mr-1"></i>
         تتبع دور كل لاعب في كل نوع من أنواع المحتوى
     </p>
-    <a href="{{ route('social.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus mr-2"></i> إضافة لاعب للقائمة
-    </a>
+    <div class="d-flex" style="gap:8px">
+        <a href="{{ route('social.schedule') }}" class="btn btn-secondary">
+            <i class="fas fa-calendar-alt mr-2"></i> الجدول الزمني
+        </a>
+        <a href="{{ route('social.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus mr-2"></i> إضافة لاعب للقائمة
+        </a>
+    </div>
 </div>
 
 {{-- Board --}}
@@ -137,6 +142,80 @@
     </div>
     @endforeach
 </div>
+
+{{-- Upcoming Scheduled Posts --}}
+@if($scheduledUpcoming->count())
+<div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-calendar-check text-accent mr-2"></i>
+            <span class="card-title">الجلسات المجدولة القادمة</span>
+            <span class="badge badge-primary ml-2">{{ $scheduledUpcoming->count() }}</span>
+        </div>
+        <a href="{{ route('social.schedule') }}" class="btn btn-secondary btn-sm">
+            عرض الكل <i class="fas fa-arrow-left ml-1"></i>
+        </a>
+    </div>
+    <div class="card-body" style="padding:0 !important">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الطالب</th>
+                        <th>الوصف</th>
+                        <th>الحالة</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $arabicDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+                    @endphp
+                    @foreach($scheduledUpcoming as $item)
+                    <tr>
+                        <td style="font-weight:600;font-size:13px;white-space:nowrap">
+                            {{ $item->scheduled_date?->format('Y/m/d') }}
+                            <div style="font-size:11px;color:var(--text-muted)">
+                                {{ $item->scheduled_date ? $arabicDays[$item->scheduled_date->dayOfWeek] : '' }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center" style="gap:8px">
+                                <div class="player-avatar-sm">{{ $item->player?->initials }}</div>
+                                <span style="font-size:13px;font-weight:600">{{ $item->player?->full_name }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">{{ $item->custom_description }}</span>
+                        </td>
+                        <td>
+                            @if($item->scheduled_date && $item->scheduled_date->isToday())
+                                <span class="badge badge-success">اليوم</span>
+                            @elseif($item->scheduled_date && $item->scheduled_date->isTomorrow())
+                                <span class="badge badge-primary">بكرا</span>
+                            @elseif($item->scheduled_date && $item->scheduled_date->isPast())
+                                <span class="badge badge-danger">متأخر</span>
+                            @else
+                                <span class="badge badge-secondary">قادم</span>
+                            @endif
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ route('social.markPublished', $item) }}">
+                                @csrf @method('PATCH')
+                                <button type="submit" class="btn btn-sm btn-success" title="تم النشر">
+                                    <i class="fas fa-check mr-1"></i> تم
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
 
 @endsection
 

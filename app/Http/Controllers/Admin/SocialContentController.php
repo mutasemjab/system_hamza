@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Player;
 use App\Models\SocialContent;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SocialContentController extends Controller
@@ -23,7 +24,15 @@ class SocialContentController extends Controller
             ];
         }
 
-        return view('admin.social.index', compact('board', 'types'));
+        // Upcoming scheduled posts (custom, date-based)
+        $scheduledUpcoming = SocialContent::scheduled()
+            ->with('player')
+            ->where('status', '!=', 'published')
+            ->orderBy('scheduled_date')
+            ->limit(30)
+            ->get();
+
+        return view('admin.social.index', compact('board', 'types', 'scheduledUpcoming'));
     }
 
     public function create()
@@ -42,7 +51,6 @@ class SocialContentController extends Controller
             'notes'        => 'nullable|string',
         ]);
 
-        // Only one "next" per type allowed
         if ($request->status === 'next') {
             SocialContent::where('content_type', $request->content_type)
                 ->where('status', 'next')
@@ -106,24 +114,94 @@ class SocialContentController extends Controller
             'published_at' => now()->toDateString(),
         ]);
 
-        // Promote the next in queue for this type
-        $nextInQueue = SocialContent::where('content_type', $social->content_type)
-            ->where('status', 'pending')
-            ->orderBy('sort_order')
-            ->first();
+        // Only promote next in queue for typed content, not scheduled entries
+        if ($social->content_type !== null) {
+            $next = SocialContent::where('content_type', $social->content_type)
+                ->whereNull('scheduled_date')
+                ->where('status', 'pending')
+                ->orderBy('sort_order')
+                ->first();
 
-        if ($nextInQueue) {
-            $nextInQueue->update(['status' => 'next']);
+            if ($next) {
+                $next->update(['status' => 'next']);
+            }
         }
 
-        return redirect()->route('social.index')
+        return redirect()->back()
             ->with('success', 'تم تأكيد نشر المحتوى وترقية اللاعب التالي');
     }
 
     public function destroy(SocialContent $social)
     {
         $social->delete();
-        return redirect()->route('social.index')
+        return redirect()->back()
             ->with('success', 'تم حذف المحتوى');
+    }
+
+    /* ── Schedule Generator ── */
+
+    public function scheduleForm()
+    {
+        $players = Player::orderBy('full_name')->get();
+
+        // Past + upcoming scheduled entries for the list
+        $scheduled = SocialContent::scheduled()
+            ->with('player')
+            ->orderByDesc('scheduled_date')
+            ->limit(60)
+            ->get();
+
+        return view('admin.social.schedule', compact('players', 'scheduled'));
+    }
+
+    public function scheduleGenerate(Request $request)
+    {
+        $request->validate([
+            'description' => 'required|string|max:255',
+            'player_ids'  => 'required|array|min:1',
+            'player_ids.*'=> 'exists:players,id',
+            'days'        => 'required|array|min:1',
+            'days.*'      => 'integer|between:0,6',
+            'start_date'  => 'required|date',
+            'end_date'    => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $playerIds   = $request->player_ids;
+        $days        = array_map('intval', $request->days);
+        $description = trim($request->description);
+        $start       = Carbon::parse($request->start_date)->startOfDay();
+        $end         = Carbon::parse($request->end_date)->startOfDay();
+
+        $rows        = [];
+        $playerIndex = 0;
+        $cursor      = $start->copy();
+
+        while ($cursor->lte($end)) {
+            if (in_array($cursor->dayOfWeek, $days)) {
+                $rows[] = [
+                    'player_id'          => $playerIds[$playerIndex % count($playerIds)],
+                    'content_type'       => null,
+                    'custom_description' => $description,
+                    'scheduled_date'     => $cursor->toDateString(),
+                    'status'             => 'pending',
+                    'sort_order'         => 0,
+                    'notes'              => null,
+                    'published_at'       => null,
+                    'created_at'         => now(),
+                    'updated_at'         => now(),
+                ];
+                $playerIndex++;
+            }
+            $cursor->addDay();
+        }
+
+        if (empty($rows)) {
+            return redirect()->back()->with('error', 'لا يوجد أي يوم مطابق في النطاق المحدد');
+        }
+
+        SocialContent::insert($rows);
+
+        return redirect()->route('social.schedule')
+            ->with('success', 'تم إنشاء ' . count($rows) . ' جلسة بنجاح');
     }
 }

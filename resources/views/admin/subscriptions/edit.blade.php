@@ -7,6 +7,33 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-8">
+
+    {{-- Frozen alert --}}
+    @if($subscription->is_frozen)
+    <div class="freeze-status-banner mb-3">
+        <div class="freeze-status-icon"><i class="fas fa-snowflake fa-spin" style="animation-duration:3s"></i></div>
+        <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:#075985">الاشتراك مجمّد حالياً</div>
+            <div style="font-size:12.5px;color:#0369a1;margin-top:2px">
+                منذ {{ $subscription->frozen_at?->format('Y/m/d') }}
+                @if($subscription->frozen_days_remaining)
+                    &nbsp;·&nbsp; {{ $subscription->frozen_days_remaining }} يوم متبقية في الاشتراك
+                @endif
+                @if($subscription->freeze_note)
+                    &nbsp;·&nbsp; {{ $subscription->freeze_note }}
+                @endif
+            </div>
+        </div>
+        <form method="POST" action="{{ route('subscriptions.unfreeze', $subscription) }}"
+              onsubmit="return confirm('استئناف الاشتراك وإضافة الأيام المتبقية من اليوم؟')">
+            @csrf
+            <button type="submit" class="btn btn-success btn-sm">
+                <i class="fas fa-play mr-1"></i> استئناف الاشتراك
+            </button>
+        </form>
+    </div>
+    @endif
+
         <form method="POST" action="{{ route('subscriptions.update', $subscription) }}">
             @csrf @method('PUT')
             <div class="card">
@@ -89,6 +116,42 @@
                 </div>
             </div>
         </form>
+
+        {{-- Freeze Card (only when not already frozen) --}}
+        @if(!$subscription->is_frozen)
+        <div class="card mt-4">
+            <div class="card-header" style="background:linear-gradient(135deg,#f0f9ff,#e0f2fe)">
+                <i class="fas fa-pause-circle" style="color:#0ea5e9"></i>
+                <span class="card-title" style="color:#075985">تجميد الاشتراك</span>
+            </div>
+            <div class="card-body">
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">
+                    عند التجميد يتوقف احتساب مدة الاشتراك. عند الاستئناف، تُضاف الأيام المتبقية تلقائياً من يوم الرجوع.
+                </p>
+                <form method="POST" action="{{ route('subscriptions.freeze', $subscription) }}">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>تاريخ بداية التجميد</label>
+                            <input type="date" name="freeze_date" class="form-control"
+                                   value="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>سبب التجميد (اختياري)</label>
+                            <input type="text" name="freeze_note" class="form-control"
+                                   placeholder="مثال: سفر، إصابة...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-sm"
+                            style="background:#0ea5e9;border-color:#0ea5e9;color:#fff"
+                            onclick="return confirm('تأكيد تجميد الاشتراك؟')">
+                        <i class="fas fa-pause mr-1"></i> تجميد الاشتراك
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
+
     </div>
 </div>
 @endsection
@@ -100,6 +163,22 @@
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 14px 18px;
+}
+.freeze-status-banner {
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+    border: 1.5px solid #7dd3fc;
+    border-radius: 12px;
+    padding: 14px 18px;
+}
+.freeze-status-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: #fff; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(14,165,233,.3);
 }
 </style>
 @endsection

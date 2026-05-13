@@ -48,6 +48,40 @@
     </div>
 </div>
 
+{{-- Birthday Reminders --}}
+@if($birthdayPlayers->count())
+<div class="birthday-banner mb-4">
+    <div class="birthday-banner-icon"><i class="fas fa-birthday-cake"></i></div>
+    <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:#be185d;margin-bottom:8px">
+            <i class="fas fa-bell mr-1"></i> أعياد ميلاد قادمة
+        </div>
+        <div class="birthday-list">
+            @foreach($birthdayPlayers as $player)
+            <div class="birthday-chip">
+                <div class="birthday-chip-avatar">{{ $player->initials }}</div>
+                <div>
+                    <div style="font-size:12.5px;font-weight:600;color:#1e293b">{{ $player->full_name }}</div>
+                    <div class="birthday-chip-when">
+                        @if($player->days_until_birthday == 0)
+                            🎉 اليوم!
+                        @elseif($player->days_until_birthday == 1)
+                            🥳 بكرا!
+                        @elseif($player->days_until_birthday == 2)
+                            😊 بعد بكرا
+                        @else
+                            {{ $player->next_birthday->translatedFormat('d M') }}
+                            &nbsp;·&nbsp; بعد {{ $player->days_until_birthday }} أيام
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="row">
     {{-- Social Media Quick View --}}
     <div class="col-lg-7 mb-4">
@@ -212,6 +246,51 @@
 
 @section('css')
 <style>
+/* ── Birthday Banner ── */
+.birthday-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+    border: 1.5px solid #fbcfe8;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(236,72,153,.08);
+}
+.birthday-banner-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ec4899, #be185d);
+    color: #fff; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(236,72,153,.3);
+}
+.birthday-list {
+    display: flex; flex-wrap: wrap; gap: 10px;
+}
+.birthday-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff;
+    border: 1px solid #fbcfe8;
+    border-radius: 10px;
+    padding: 8px 12px;
+    transition: box-shadow .15s;
+}
+.birthday-chip:hover { box-shadow: 0 2px 8px rgba(236,72,153,.12); }
+.birthday-chip-avatar {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ec4899, #be185d);
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.birthday-chip-when {
+    font-size: 11.5px; color: #9d174d; font-weight: 600; margin-top: 1px;
+}
+
+/* ── Social Dash ── */
 .social-dash-card {
     border: 1px solid var(--border-color);
     border-radius: 12px;

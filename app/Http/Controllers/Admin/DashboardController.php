@@ -7,7 +7,7 @@ use App\Models\Player;
 use App\Models\Subscription;
 use App\Models\SocialContent;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $lateSubscriptions  = Subscription::where('status', 'late')->with('player')->latest()->limit(5)->get();
         $recentPlayers      = Player::with('subscription')->latest()->limit(6)->get();
 
-        // Social board summary (how many published total per type)
+        // Social board summary (per typed content)
         $socialSummary = [];
         foreach (SocialContent::$types as $type => $meta) {
             $socialSummary[$type] = [
@@ -31,6 +31,26 @@ class DashboardController extends Controller
             ];
         }
 
+        // Birthday reminders — players whose birthday falls within the next 7 days
+        $today = Carbon::today();
+        $birthdayPlayers = Player::whereNotNull('birth_date')
+            ->get()
+            ->map(function ($player) use ($today) {
+                $bday = $player->birth_date->copy()->setYear($today->year);
+                if ($bday->lt($today)) {
+                    $bday->addYear();
+                }
+                $player->days_until_birthday = $today->diffInDays($bday);
+                $player->next_birthday       = $bday;
+                return $player;
+            })
+            ->filter(fn($p) => $p->days_until_birthday <= 7)
+            ->sortBy('days_until_birthday')
+            ->values();
+
+        // Frozen subscriptions count (for sidebar badge / awareness)
+        $frozenCount = Subscription::where('is_frozen', true)->count();
+
         return view('admin.dashboard', compact(
             'totalPlayers',
             'totalUsers',
@@ -38,7 +58,9 @@ class DashboardController extends Controller
             'totalPending',
             'lateSubscriptions',
             'recentPlayers',
-            'socialSummary'
+            'socialSummary',
+            'birthdayPlayers',
+            'frozenCount'
         ));
     }
 }

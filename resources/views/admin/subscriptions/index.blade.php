@@ -9,7 +9,7 @@
 {{-- Stats Row --}}
 <div class="row mb-4">
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="stat-card stat-indigo">
+        <div class="stat-card stat-indigo" style="cursor:default">
             <div class="stat-card-icon"><i class="fas fa-money-bill-wave"></i></div>
             <div>
                 <div class="stat-card-value">{{ number_format($totalCollected, 0) }}</div>
@@ -44,6 +44,17 @@
             </div>
         </div>
     </div>
+    @if($frozenCount > 0)
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">
+            <div class="stat-card-icon"><i class="fas fa-pause-circle"></i></div>
+            <div>
+                <div class="stat-card-value">{{ $frozenCount }}</div>
+                <div class="stat-card-label">اشتراكات مجمّدة</div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 {{-- Alerts --}}
@@ -87,6 +98,7 @@
                 <option value="active"  {{ request('status') == 'active'  ? 'selected' : '' }}>فعال</option>
                 <option value="late"    {{ request('status') == 'late'    ? 'selected' : '' }}>متأخر</option>
                 <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>منتهي</option>
+                <option value="frozen"  {{ request('status') == 'frozen'  ? 'selected' : '' }}>مجمّد</option>
             </select>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-search mr-1"></i> بحث
@@ -163,12 +175,39 @@
                         <td>
                             @php $badge = $sub->status_badge; @endphp
                             <span class="badge {{ $badge['class'] }}">{{ $badge['label'] }}</span>
+                            @if($sub->is_frozen && $sub->frozen_at)
+                                <div style="font-size:11px;color:var(--info, #0ea5e9);margin-top:3px">
+                                    <i class="fas fa-snowflake mr-1"></i>
+                                    منذ {{ $sub->frozen_at->format('Y/m/d') }}
+                                    @if($sub->frozen_days_remaining)
+                                        · {{ $sub->frozen_days_remaining }} يوم متبقي
+                                    @endif
+                                </div>
+                            @endif
                         </td>
                         <td>
                             <div class="d-flex" style="gap:6px">
                                 <a href="{{ route('subscriptions.edit', $sub) }}" class="btn btn-sm btn-primary" title="تعديل">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                @if($sub->is_frozen)
+                                    {{-- Resume --}}
+                                    <form method="POST" action="{{ route('subscriptions.unfreeze', $sub) }}"
+                                          onsubmit="return confirm('استئناف الاشتراك؟')">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success" title="استئناف الاشتراك">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    {{-- Freeze --}}
+                                    <button type="button" class="btn btn-sm btn-info freeze-btn"
+                                            title="تجميد الاشتراك"
+                                            data-id="{{ $sub->id }}"
+                                            data-name="{{ $sub->player?->full_name }}">
+                                        <i class="fas fa-pause"></i>
+                                    </button>
+                                @endif
                                 <form method="POST" action="{{ route('subscriptions.destroy', $sub) }}"
                                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الاشتراك؟')">
                                     @csrf @method('DELETE')
@@ -197,6 +236,49 @@
     </div>
     @endif
 </div>
+{{-- Freeze Modal --}}
+<div class="modal fade" id="freezeModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px">
+        <div class="modal-content" style="border-radius:16px;overflow:hidden;border:none">
+            <div class="modal-header" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);border:none;padding:20px 24px">
+                <h5 class="modal-title text-white" style="font-size:15px;font-weight:700">
+                    <i class="fas fa-pause-circle mr-2"></i> تجميد الاشتراك
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="freezeForm" method="POST" action="">
+                @csrf
+                <div class="modal-body" style="padding:24px">
+                    <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px">
+                        تجميد اشتراك: <strong id="freezePlayerName"></strong>
+                    </p>
+                    <div class="form-group mb-3">
+                        <label>تاريخ بداية التجميد</label>
+                        <input type="date" name="freeze_date" class="form-control"
+                               value="{{ date('Y-m-d') }}" required>
+                        <div style="font-size:11.5px;color:var(--text-muted);margin-top:5px">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            سيتم احتساب الأيام المتبقية من هذا التاريخ حتى تاريخ انتهاء الاشتراك.
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label>سبب التجميد (اختياري)</label>
+                        <input type="text" name="freeze_note" class="form-control"
+                               placeholder="مثال: سفر، إصابة...">
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding:14px 24px;border-top:1px solid var(--border-color)">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-pause mr-1"></i> تجميد الاشتراك
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('css')
@@ -209,5 +291,31 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 }
+.btn-info {
+    background: #0ea5e9 !important;
+    border-color: #0ea5e9 !important;
+    color: #fff !important;
+}
+.btn-info:hover {
+    background: #0284c7 !important;
+    border-color: #0284c7 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(14,165,233,.35) !important;
+}
 </style>
+@endsection
+
+@section('js')
+<script>
+document.querySelectorAll('.freeze-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const id   = this.dataset.id;
+        const name = this.dataset.name;
+        document.getElementById('freezePlayerName').textContent = name;
+        document.getElementById('freezeForm').action =
+            '{{ route("subscriptions.freeze", ":id") }}'.replace(':id', id);
+        jQuery('#freezeModal').modal('show');
+    });
+});
+</script>
 @endsection
