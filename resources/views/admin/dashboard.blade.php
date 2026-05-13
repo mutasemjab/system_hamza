@@ -83,45 +83,52 @@
 @endif
 
 <div class="row">
-    {{-- Social Media Quick View --}}
+    {{-- Social Media Upcoming --}}
     <div class="col-lg-7 mb-4">
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fas fa-photo-film text-accent mr-2"></i>
-                    <span class="card-title">دور المحتوى الحالي</span>
+                    <span class="card-title">الجلسات القادمة</span>
+                    <span class="badge badge-secondary ml-2">{{ $socialPendingCount }} قادم · {{ $socialPublishedCount }} منشور</span>
                 </div>
-                <a href="{{ route('social.index') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('social.schedule') }}" class="btn btn-secondary btn-sm">
                     عرض الكل <i class="fas fa-arrow-left ml-1"></i>
                 </a>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    @foreach($socialSummary as $type => $data)
-                    @php $meta = $data['meta']; @endphp
-                    <div class="col-sm-6 mb-3">
-                        <div class="social-dash-card" style="--sc-color: {{ $meta['color'] }}">
-                            <div class="social-dash-header">
-                                <i class="{{ $meta['icon'] }}" style="color:{{ $meta['color'] }}"></i>
-                                <span>{{ $meta['label'] }}</span>
-                                <span class="social-dash-counts">
-                                    {{ $data['pending'] }} قادم · {{ $data['published'] }} منشور
-                                </span>
-                            </div>
-                            @if($data['current'])
-                                <div class="social-dash-current">
-                                    <div class="social-dash-avatar" style="background:linear-gradient(135deg,{{ $meta['color'] }},#8b5cf6)">
-                                        {{ $data['current']->player?->initials }}
-                                    </div>
-                                    <div style="font-size:13px;font-weight:600">{{ $data['current']->player?->full_name }}</div>
-                                </div>
-                            @else
-                                <div style="font-size:12px;color:var(--text-muted);padding:4px 0">لا يوجد دور محدد</div>
-                            @endif
+            <div class="card-body" style="padding:12px 22px !important">
+                @forelse($socialUpcoming as $item)
+                @php
+                    $arabicDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+                @endphp
+                <div class="social-upcoming-row">
+                    <div style="min-width:70px;text-align:center">
+                        <div style="font-size:13px;font-weight:700;color:var(--text-primary)">
+                            {{ $item->scheduled_date?->format('m/d') }}
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted)">
+                            {{ $item->scheduled_date ? $arabicDays[$item->scheduled_date->dayOfWeek] : '' }}
                         </div>
                     </div>
-                    @endforeach
+                    <div class="late-sub-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+                        {{ $item->player?->initials }}
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:13px;font-weight:600">{{ $item->player?->full_name }}</div>
+                        <div style="font-size:12px;color:var(--text-muted)">{{ $item->custom_description }}</div>
+                    </div>
+                    @if($item->scheduled_date && $item->scheduled_date->isToday())
+                        <span class="badge badge-success">اليوم</span>
+                    @elseif($item->scheduled_date && $item->scheduled_date->isTomorrow())
+                        <span class="badge badge-primary">بكرا</span>
+                    @endif
                 </div>
+                @empty
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-check" style="font-size:32px;color:var(--success);opacity:.5;display:block;margin-bottom:8px"></i>
+                    <span style="font-size:13px;color:var(--text-muted)">لا توجد جلسات قادمة</span>
+                </div>
+                @endforelse
             </div>
         </div>
     </div>
@@ -290,29 +297,12 @@
     font-size: 11.5px; color: #9d174d; font-weight: 600; margin-top: 1px;
 }
 
-/* ── Social Dash ── */
-.social-dash-card {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 14px;
-    background: #fff;
-    transition: box-shadow .2s;
+/* ── Social Upcoming ── */
+.social-upcoming-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
 }
-.social-dash-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
-.social-dash-header {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 13px; font-weight: 600; margin-bottom: 10px;
-}
-.social-dash-counts { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: auto; }
-.social-dash-current {
-    display: flex; align-items: center; gap: 8px;
-    background: #f8fafc; border-radius: 8px; padding: 8px 10px;
-}
-.social-dash-avatar {
-    width: 30px; height: 30px; border-radius: 8px;
-    color: #fff; font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-}
+.social-upcoming-row:last-child { border-bottom: none; }
 .late-sub-row {
     display: flex; align-items: center; gap: 12px;
     padding: 10px 0; border-bottom: 1px solid #f1f5f9;

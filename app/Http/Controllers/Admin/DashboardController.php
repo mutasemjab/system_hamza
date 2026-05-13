@@ -20,16 +20,16 @@ class DashboardController extends Controller
         $lateSubscriptions  = Subscription::where('status', 'late')->with('player')->latest()->limit(5)->get();
         $recentPlayers      = Player::with('subscription')->latest()->limit(6)->get();
 
-        // Social board summary (per typed content)
-        $socialSummary = [];
-        foreach (SocialContent::$types as $type => $meta) {
-            $socialSummary[$type] = [
-                'meta'      => $meta,
-                'current'   => SocialContent::with('player')->where('content_type', $type)->where('status', 'next')->first(),
-                'pending'   => SocialContent::where('content_type', $type)->where('status', 'pending')->count(),
-                'published' => SocialContent::where('content_type', $type)->where('status', 'published')->count(),
-            ];
-        }
+        // Upcoming scheduled sessions
+        $socialUpcoming = SocialContent::with('player')
+            ->where('status', 'pending')
+            ->where('scheduled_date', '>=', Carbon::today())
+            ->orderBy('scheduled_date')
+            ->limit(6)
+            ->get();
+
+        $socialPendingCount   = SocialContent::where('status', 'pending')->count();
+        $socialPublishedCount = SocialContent::where('status', 'published')->count();
 
         // Birthday reminders — players whose birthday falls within the next 7 days
         $today = Carbon::today();
@@ -58,7 +58,9 @@ class DashboardController extends Controller
             'totalPending',
             'lateSubscriptions',
             'recentPlayers',
-            'socialSummary',
+            'socialUpcoming',
+            'socialPendingCount',
+            'socialPublishedCount',
             'birthdayPlayers',
             'frozenCount'
         ));

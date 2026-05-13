@@ -68,15 +68,14 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('subscriptions/{subscription}/freeze',   [SubscriptionController::class, 'freeze'])  ->name('subscriptions.freeze');
         Route::post('subscriptions/{subscription}/unfreeze', [SubscriptionController::class, 'unfreeze'])->name('subscriptions.unfreeze');
 
-        // Social schedule must come before the resource to avoid {social} catching "schedule"
-        Route::get ('social/schedule',  [SocialContentController::class, 'scheduleForm'])    ->name('social.schedule');
-        Route::post('social/schedule',  [SocialContentController::class, 'scheduleGenerate'])->name('social.schedule.generate');
-
-        Route::resource('social', SocialContentController::class)
-             ->except(['show']);
-
-        Route::patch('social/{social}/mark-published', [SocialContentController::class, 'markPublished'])
-             ->name('social.markPublished');
+        // Social — schedule-only section
+        Route::get  ('social',                         [SocialContentController::class, 'index'])           ->name('social.index');
+        Route::get  ('social/schedule',                [SocialContentController::class, 'scheduleForm'])    ->name('social.schedule');
+        Route::post ('social/schedule',                [SocialContentController::class, 'scheduleGenerate'])->name('social.schedule.generate');
+        Route::post ('social',                         [SocialContentController::class, 'store'])           ->name('social.store');
+        Route::patch('social/{social}',                [SocialContentController::class, 'update'])          ->name('social.update');
+        Route::delete('social/{social}',               [SocialContentController::class, 'destroy'])         ->name('social.destroy');
+        Route::patch('social/{social}/mark-published', [SocialContentController::class, 'markPublished'])   ->name('social.markPublished');
     });
 });
 
