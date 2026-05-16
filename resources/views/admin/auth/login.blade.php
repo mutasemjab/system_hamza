@@ -17,10 +17,10 @@
         :root {
             --accent:       #0c3c2c;
             --accent-2:     #1a7a55;
-            --accent-glow:  rgba(12,60,44,.55);
-            --dark:         #0f172a;
-            --dark-2:       #1e293b;
-            --dark-3:       #263247;
+            --accent-glow:  rgba(12,60,44,.60);
+            --dark:         #061009;
+            --dark-2:       #0d1f16;
+            --dark-3:       #122b1e;
             --text:         #f1f5f9;
             --text-muted:   #94a3b8;
             --border:       rgba(255,255,255,.08);
@@ -51,7 +51,7 @@
         /* ── Hero panel (left) ── */
         .login-hero {
             position: relative;
-            background: linear-gradient(145deg, #0d1526 0%, #1a1040 50%, #0f172a 100%);
+            background: linear-gradient(145deg, #040d08 0%, #071e15 50%, #040d08 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -65,12 +65,12 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(80px);
-            opacity: .35;
+            opacity: .40;
             animation: float 8s ease-in-out infinite;
         }
         .blob-1 { width: 420px; height: 420px; background: #0c3c2c; top: -120px; left: -80px; animation-delay: 0s; }
         .blob-2 { width: 320px; height: 320px; background: #1a7a55; bottom: -80px; right: -60px; animation-delay: 3s; }
-        .blob-3 { width: 200px; height: 200px; background: #06b6d4; top: 45%; left: 30%; animation-delay: 1.5s; }
+        .blob-3 { width: 200px; height: 200px; background: #064e3b; top: 45%; left: 30%; animation-delay: 1.5s; }
         @keyframes float {
             0%, 100% { transform: translateY(0) scale(1); }
             50%       { transform: translateY(-30px) scale(1.06); }
@@ -80,7 +80,7 @@
         .hero-grid {
             position: absolute;
             inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
@@ -89,27 +89,26 @@
             z-index: 1;
             text-align: center;
         }
+
+        /* Logo image */
         .hero-logo {
-            width: 72px; height: 72px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: #fff;
-            margin: 0 auto 28px;
-            box-shadow: 0 8px 32px var(--accent-glow);
-            animation: pulse-logo 3s ease-in-out infinite;
+            margin: 0 auto 32px;
         }
-        @keyframes pulse-logo {
-            0%, 100% { box-shadow: 0 8px 32px var(--accent-glow); }
-            50%       { box-shadow: 0 12px 48px rgba(99,102,241,.7); }
+        .hero-logo img {
+            height: 90px;
+            width: auto;
+            max-width: 220px;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 24px rgba(12,60,44,.8)) brightness(1.05);
         }
+
         .hero-title {
             font-size: 38px;
             font-weight: 800;
             letter-spacing: -1px;
             line-height: 1.15;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, #fff 30%, #a5b4fc);
+            background: linear-gradient(135deg, #fff 30%, #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -136,7 +135,7 @@
             font-size: 13px; color: var(--text-muted);
             backdrop-filter: blur(8px);
         }
-        .hero-pill i { color: var(--accent); font-size: 13px; }
+        .hero-pill i { color: #6ee7b7; font-size: 13px; }
 
         /* ── Form panel (right) ── */
         .login-panel {
@@ -149,13 +148,13 @@
             position: relative;
         }
 
-        /* Subtle top gradient stripe */
+        /* Top gradient stripe */
         .login-panel::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-2), #06b6d4);
+            background: linear-gradient(90deg, var(--accent), var(--accent-2), #34d399);
         }
 
         .login-form-wrap {
@@ -166,18 +165,17 @@
         /* Mobile logo */
         .mobile-logo {
             display: none;
-            align-items: center; gap: 12px;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 32px;
         }
         @media (max-width: 900px) { .mobile-logo { display: flex; } }
-        .mobile-logo-icon {
-            width: 44px; height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px; color: #fff;
+        .mobile-logo img {
+            height: 52px;
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
         }
-        .mobile-logo-text { font-size: 22px; font-weight: 800; color: var(--text); }
 
         .form-heading { margin-bottom: 32px; }
         .form-heading h1 {
@@ -196,7 +194,7 @@
         .error-box {
             display: flex; align-items: flex-start; gap: 10px;
             padding: 12px 16px;
-            background: rgba(239,68,68,.1);
+            background: rgba(239,68,68,.10);
             border: 1px solid rgba(239,68,68,.25);
             border-radius: 10px;
             margin-bottom: 24px;
@@ -215,9 +213,7 @@
             margin-bottom: 8px;
             letter-spacing: .2px;
         }
-        .field-wrap {
-            position: relative;
-        }
+        .field-wrap { position: relative; }
         .field-icon {
             position: absolute;
             top: 50%; right: 14px;
@@ -227,7 +223,7 @@
             pointer-events: none;
             transition: color var(--trans);
         }
-        .field-wrap:focus-within .field-icon { color: var(--accent); }
+        .field-wrap:focus-within .field-icon { color: #6ee7b7; }
 
         .field input {
             width: 100%;
@@ -243,9 +239,9 @@
         }
         .field input::placeholder { color: #475569; }
         .field input:focus {
-            border-color: var(--accent);
-            background: rgba(99,102,241,.08);
-            box-shadow: 0 0 0 3px rgba(99,102,241,.2);
+            border-color: var(--accent-2);
+            background: rgba(26,122,85,.10);
+            box-shadow: 0 0 0 3px rgba(26,122,85,.20);
         }
         .field input.is-error { border-color: rgba(239,68,68,.6); }
         .field-error {
@@ -291,23 +287,22 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,.1), transparent);
+            background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
             opacity: 0;
             transition: opacity var(--trans);
         }
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(99,102,241,.6);
+            box-shadow: 0 8px 28px rgba(26,122,85,.60);
         }
         .btn-login:hover::after { opacity: 1; }
         .btn-login:active { transform: translateY(0); }
 
         .btn-login .btn-content {
             display: flex; align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1;
         }
-        .btn-login .btn-arrow {
-            transition: transform var(--trans);
-        }
+        .btn-login .btn-arrow { transition: transform var(--trans); }
         .btn-login:hover .btn-arrow { transform: translateX(-4px); }
 
         /* Footer */
@@ -337,7 +332,7 @@
 
         <div class="hero-content">
             <div class="hero-logo">
-                <i class="fas fa-layer-group"></i>
+                <img src="{{ asset('assets/admin/logo.png') }}" alt="Logo">
             </div>
             <h1 class="hero-title">منصة إدارة<br>الأكاديمية</h1>
             <p class="hero-subtitle">
@@ -356,10 +351,9 @@
     <div class="login-panel">
         <div class="login-form-wrap">
 
-            <!-- Mobile logo -->
+            <!-- Mobile logo (shown on small screens when hero is hidden) -->
             <div class="mobile-logo">
-                <div class="mobile-logo-icon"><i class="fas fa-layer-group"></i></div>
-                <span class="mobile-logo-text">Sys</span>
+                <img src="{{ asset('assets/admin/logo.png') }}" alt="Logo">
             </div>
 
             <div class="form-heading">
