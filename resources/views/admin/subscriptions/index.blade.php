@@ -286,7 +286,7 @@
 .player-avatar-sm {
     width: 34px; height: 34px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #0c3c2c, #1a7a55);
     color: #fff; font-size: 12px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;

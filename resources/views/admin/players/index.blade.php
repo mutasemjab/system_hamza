@@ -153,7 +153,7 @@
 .player-avatar {
     width: 42px; height: 42px;
     border-radius: 10px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #0c3c2c, #1a7a55);
     color: #fff;
     font-weight: 700;
     font-size: 14px;

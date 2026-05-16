@@ -7,7 +7,8 @@
       "Bash(Get-ChildItem -Path \"c:\\\\xampp\\\\htdocs\\\\sys\\\\resources\\\\views\\\\admin\\\\\" -Recurse -Force | Select-Object -Property FullName, PSIsContainer | Sort-Object FullName)",
       "Bash(Get-Content -Path \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\css\\\\style.css\" -Raw)",
       "Bash(Measure-Object -Character)",
-      "PowerShell(Get-Item \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\css\\\\style.css\", \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\js\\\\main.js\" | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}})"
+      "PowerShell(Get-Item \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\css\\\\style.css\", \"c:\\\\xampp\\\\htdocs\\\\sys\\\\assets\\\\admin\\\\js\\\\main.js\" | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,1\\)}})",
+      "Bash(powershell -Command \"\\(Get-Content 'c:\\\\xampp\\\\htdocs\\\\sys\\\\resources\\\\views\\\\admin\\\\social\\\\index.blade.php'\\) -replace '#6366f1','#0c3c2c' -replace '#8b5cf6','#1a7a55' | Set-Content 'c:\\\\xampp\\\\htdocs\\\\sys\\\\resources\\\\views\\\\admin\\\\social\\\\index.blade.php' -Encoding utf8\")"
     ]
   }
 }

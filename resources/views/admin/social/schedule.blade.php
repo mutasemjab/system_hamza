@@ -467,7 +467,7 @@
 /* ── Avatar ── */
 .player-avatar-sm {
     width: 32px; height: 32px; border-radius: 8px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #0c3c2c, #1a7a55);
     color: #fff; font-size: 11px; font-weight: 700;
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
@@ -476,9 +476,11 @@
 
 @section('js')
 <script>
-/* Day chip toggle */
+/* Day chip toggle — e.preventDefault() stops the browser from double-toggling
+   the hidden checkbox (label wrapping an input fires two toggle events) */
 document.querySelectorAll('.day-chip').forEach(chip => {
-    chip.addEventListener('click', function () {
+    chip.addEventListener('click', function (e) {
+        e.preventDefault();
         this.classList.toggle('selected');
         this.querySelector('input[type="checkbox"]').checked = this.classList.contains('selected');
         updatePreview();

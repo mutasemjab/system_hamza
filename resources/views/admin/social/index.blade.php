@@ -1,22 +1,22 @@
-@extends('layouts.admin')
-@section('title', 'السوشال ميديا')
+﻿@extends('layouts.admin')
+@section('title', 'Ø§Ù„Ø³ÙˆØ´Ø§Ù„ Ù…ÙŠØ¯ÙŠØ§')
 
-@section('contentheader', 'إدارة محتوى السوشال ميديا')
-@section('contentheaderactive', 'السوشال ميديا')
+@section('contentheader', 'Ø¥Ø¯Ø§Ø±Ø© Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ø³ÙˆØ´Ø§Ù„ Ù…ÙŠØ¯ÙŠØ§')
+@section('contentheaderactive', 'Ø§Ù„Ø³ÙˆØ´Ø§Ù„ Ù…ÙŠØ¯ÙŠØ§')
 
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <p class="text-muted mb-0" style="font-size:13px">
         <i class="fas fa-info-circle mr-1"></i>
-        تتبع دور كل لاعب في كل نوع من أنواع المحتوى
+        ØªØªØ¨Ø¹ Ø¯ÙˆØ± ÙƒÙ„ Ù„Ø§Ø¹Ø¨ ÙÙŠ ÙƒÙ„ Ù†ÙˆØ¹ Ù…Ù† Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ù…Ø­ØªÙˆÙ‰
     </p>
     <div class="d-flex" style="gap:8px">
         <a href="{{ route('social.schedule') }}" class="btn btn-secondary">
-            <i class="fas fa-calendar-alt mr-2"></i> الجدول الزمني
+            <i class="fas fa-calendar-alt mr-2"></i> Ø§Ù„Ø¬Ø¯ÙˆÙ„ Ø§Ù„Ø²Ù…Ù†ÙŠ
         </a>
         <a href="{{ route('social.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus mr-2"></i> إضافة لاعب للقائمة
+            <i class="fas fa-plus mr-2"></i> Ø¥Ø¶Ø§ÙØ© Ù„Ø§Ø¹Ø¨ Ù„Ù„Ù‚Ø§Ø¦Ù…Ø©
         </a>
     </div>
 </div>
@@ -40,19 +40,19 @@
             <div>
                 <div class="social-col-title">{{ $meta['label'] }}</div>
                 <div class="social-col-count">
-                    {{ $queue->count() }} في الانتظار · {{ $published->count() }} منشور
+                    {{ $queue->count() }} ÙÙŠ Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø± Â· {{ $published->count() }} Ù…Ù†Ø´ÙˆØ±
                 </div>
             </div>
         </div>
 
         {{-- Current Turn --}}
         <div class="social-section-label">
-            <i class="fas fa-star mr-1" style="color:var(--warning)"></i> دوره الآن
+            <i class="fas fa-star mr-1" style="color:var(--warning)"></i> Ø¯ÙˆØ±Ù‡ Ø§Ù„Ø¢Ù†
         </div>
         @if($current)
         <div class="social-current-card">
             <div class="social-player-row">
-                <div class="social-avatar" style="background:linear-gradient(135deg,{{ $meta['color'] }},#8b5cf6)">
+                <div class="social-avatar" style="background:linear-gradient(135deg,{{ $meta['color'] }},#1a7a55)">
                     {{ $current->player?->initials }}
                 </div>
                 <div class="flex-1">
@@ -66,14 +66,14 @@
                 <form method="POST" action="{{ route('social.markPublished', $current) }}" style="flex:1">
                     @csrf @method('PATCH')
                     <button type="submit" class="btn btn-success btn-sm w-100">
-                        <i class="fas fa-check mr-1"></i> تم النشر
+                        <i class="fas fa-check mr-1"></i> ØªÙ… Ø§Ù„Ù†Ø´Ø±
                     </button>
                 </form>
                 <a href="{{ route('social.edit', $current) }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-edit"></i>
                 </a>
                 <form method="POST" action="{{ route('social.destroy', $current) }}"
-                      onsubmit="return confirm('حذف هذا السجل؟')">
+                      onsubmit="return confirm('Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ø³Ø¬Ù„ØŸ')">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">
                         <i class="fas fa-trash"></i>
@@ -84,31 +84,31 @@
         @else
         <div class="social-empty-slot">
             <i class="fas fa-user-clock" style="font-size:20px;opacity:.3"></i>
-            <div style="font-size:12px;margin-top:6px">لا يوجد دور محدد</div>
+            <div style="font-size:12px;margin-top:6px">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø¯ÙˆØ± Ù…Ø­Ø¯Ø¯</div>
         </div>
         @endif
 
         {{-- Queue --}}
         @if($queue->count())
         <div class="social-section-label mt-3">
-            <i class="fas fa-list-ol mr-1" style="color:var(--accent)"></i> قائمة الانتظار
+            <i class="fas fa-list-ol mr-1" style="color:var(--accent)"></i> Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø§Ù†ØªØ¸Ø§Ø±
         </div>
         <div class="social-queue">
             @foreach($queue as $i => $item)
             <div class="social-queue-item">
                 <span class="social-queue-num">{{ $i + 1 }}</span>
-                <div class="social-avatar-xs" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+                <div class="social-avatar-xs" style="background:linear-gradient(135deg,#0c3c2c,#1a7a55)">
                     {{ $item->player?->initials }}
                 </div>
                 <span class="flex-1" style="font-size:13px;font-weight:500">{{ $item->player?->full_name }}</span>
                 <div class="d-flex" style="gap:4px">
-                    <a href="{{ route('social.edit', $item) }}" class="social-queue-action" title="تعديل">
+                    <a href="{{ route('social.edit', $item) }}" class="social-queue-action" title="ØªØ¹Ø¯ÙŠÙ„">
                         <i class="fas fa-edit"></i>
                     </a>
                     <form method="POST" action="{{ route('social.destroy', $item) }}"
-                          onsubmit="return confirm('حذف؟')" style="margin:0">
+                          onsubmit="return confirm('Ø­Ø°ÙØŸ')" style="margin:0">
                         @csrf @method('DELETE')
-                        <button type="submit" class="social-queue-action text-danger" title="حذف">
+                        <button type="submit" class="social-queue-action text-danger" title="Ø­Ø°Ù">
                             <i class="fas fa-times"></i>
                         </button>
                     </form>
@@ -121,7 +121,7 @@
         {{-- Published --}}
         @if($published->count())
         <div class="social-section-label mt-3">
-            <i class="fas fa-check-double mr-1" style="color:var(--success)"></i> آخر منشور
+            <i class="fas fa-check-double mr-1" style="color:var(--success)"></i> Ø¢Ø®Ø± Ù…Ù†Ø´ÙˆØ±
         </div>
         <div class="social-published">
             @foreach($published as $item)
@@ -132,7 +132,7 @@
                 <span style="font-size:12px;color:var(--text-muted);flex:1">{{ $item->player?->full_name }}</span>
                 <span style="font-size:11px;color:var(--success)">
                     <i class="fas fa-check-circle mr-1"></i>
-                    {{ $item->published_at ? $item->published_at->format('m/d') : '—' }}
+                    {{ $item->published_at ? $item->published_at->format('m/d') : 'â€”' }}
                 </span>
             </div>
             @endforeach
@@ -149,11 +149,11 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <div>
             <i class="fas fa-calendar-check text-accent mr-2"></i>
-            <span class="card-title">الجلسات المجدولة القادمة</span>
+            <span class="card-title">Ø§Ù„Ø¬Ù„Ø³Ø§Øª Ø§Ù„Ù…Ø¬Ø¯ÙˆÙ„Ø© Ø§Ù„Ù‚Ø§Ø¯Ù…Ø©</span>
             <span class="badge badge-primary ml-2">{{ $scheduledUpcoming->count() }}</span>
         </div>
         <a href="{{ route('social.schedule') }}" class="btn btn-secondary btn-sm">
-            عرض الكل <i class="fas fa-arrow-left ml-1"></i>
+            Ø¹Ø±Ø¶ Ø§Ù„ÙƒÙ„ <i class="fas fa-arrow-left ml-1"></i>
         </a>
     </div>
     <div class="card-body" style="padding:0 !important">
@@ -161,16 +161,16 @@
             <table class="table mb-0">
                 <thead>
                     <tr>
-                        <th>التاريخ</th>
-                        <th>الطالب</th>
-                        <th>الوصف</th>
-                        <th>الحالة</th>
+                        <th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th>
+                        <th>Ø§Ù„Ø·Ø§Ù„Ø¨</th>
+                        <th>Ø§Ù„ÙˆØµÙ</th>
+                        <th>Ø§Ù„Ø­Ø§Ù„Ø©</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
-                        $arabicDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+                        $arabicDays = ['Ø§Ù„Ø£Ø­Ø¯','Ø§Ù„Ø§Ø«Ù†ÙŠÙ†','Ø§Ù„Ø«Ù„Ø§Ø«Ø§Ø¡','Ø§Ù„Ø£Ø±Ø¨Ø¹Ø§Ø¡','Ø§Ù„Ø®Ù…ÙŠØ³','Ø§Ù„Ø¬Ù…Ø¹Ø©','Ø§Ù„Ø³Ø¨Øª'];
                     @endphp
                     @foreach($scheduledUpcoming as $item)
                     <tr>
@@ -191,20 +191,20 @@
                         </td>
                         <td>
                             @if($item->scheduled_date && $item->scheduled_date->isToday())
-                                <span class="badge badge-success">اليوم</span>
+                                <span class="badge badge-success">Ø§Ù„ÙŠÙˆÙ…</span>
                             @elseif($item->scheduled_date && $item->scheduled_date->isTomorrow())
-                                <span class="badge badge-primary">بكرا</span>
+                                <span class="badge badge-primary">Ø¨ÙƒØ±Ø§</span>
                             @elseif($item->scheduled_date && $item->scheduled_date->isPast())
-                                <span class="badge badge-danger">متأخر</span>
+                                <span class="badge badge-danger">Ù…ØªØ£Ø®Ø±</span>
                             @else
-                                <span class="badge badge-secondary">قادم</span>
+                                <span class="badge badge-secondary">Ù‚Ø§Ø¯Ù…</span>
                             @endif
                         </td>
                         <td>
                             <form method="POST" action="{{ route('social.markPublished', $item) }}">
                                 @csrf @method('PATCH')
-                                <button type="submit" class="btn btn-sm btn-success" title="تم النشر">
-                                    <i class="fas fa-check mr-1"></i> تم
+                                <button type="submit" class="btn btn-sm btn-success" title="ØªÙ… Ø§Ù„Ù†Ø´Ø±">
+                                    <i class="fas fa-check mr-1"></i> ØªÙ…
                                 </button>
                             </form>
                         </td>
@@ -245,7 +245,7 @@
 /* Column header */
 .social-col-header {
     padding: 16px;
-    background: linear-gradient(135deg, var(--col-color, #6366f1), color-mix(in srgb, var(--col-color, #6366f1) 70%, #000));
+    background: linear-gradient(135deg, var(--col-color, #0c3c2c), color-mix(in srgb, var(--col-color, #0c3c2c) 70%, #000));
     display: flex;
     align-items: center;
     gap: 12px;

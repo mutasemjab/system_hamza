@@ -110,7 +110,7 @@
                             {{ $item->scheduled_date ? $arabicDays[$item->scheduled_date->dayOfWeek] : '' }}
                         </div>
                     </div>
-                    <div class="late-sub-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+                    <div class="late-sub-avatar" style="background:linear-gradient(135deg,#0c3c2c,#1a7a55)">
                         {{ $item->player?->initials }}
                     </div>
                     <div style="flex:1;min-width:0">
@@ -317,7 +317,7 @@
 }
 .dash-player-avatar {
     width: 36px; height: 36px; border-radius: 9px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #0c3c2c, #1a7a55);
     color: #fff; font-size: 12px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
 }

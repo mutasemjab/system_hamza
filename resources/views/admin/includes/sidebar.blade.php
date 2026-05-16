@@ -2,12 +2,7 @@
 
     <!-- Brand -->
     <a href="{{ route('admin.dashboard') }}" class="brand-link">
-        <div class="brand-icon-wrap">
-            <i class="fas fa-layer-group"></i>
-        </div>
-        <span class="brand-text">
-            Sys <span class="brand-sub">Admin</span>
-        </span>
+        <img src="{{ asset('assets/admin/logo.png') }}" alt="Logo" class="brand-logo">
     </a>
 
     <!-- Sidebar -->

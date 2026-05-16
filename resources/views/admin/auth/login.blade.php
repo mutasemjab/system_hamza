@@ -15,9 +15,9 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --accent:       #6366f1;
-            --accent-2:     #8b5cf6;
-            --accent-glow:  rgba(99,102,241,.45);
+            --accent:       #0c3c2c;
+            --accent-2:     #1a7a55;
+            --accent-glow:  rgba(12,60,44,.55);
             --dark:         #0f172a;
             --dark-2:       #1e293b;
             --dark-3:       #263247;
@@ -68,8 +68,8 @@
             opacity: .35;
             animation: float 8s ease-in-out infinite;
         }
-        .blob-1 { width: 420px; height: 420px; background: #6366f1; top: -120px; left: -80px; animation-delay: 0s; }
-        .blob-2 { width: 320px; height: 320px; background: #8b5cf6; bottom: -80px; right: -60px; animation-delay: 3s; }
+        .blob-1 { width: 420px; height: 420px; background: #0c3c2c; top: -120px; left: -80px; animation-delay: 0s; }
+        .blob-2 { width: 320px; height: 320px; background: #1a7a55; bottom: -80px; right: -60px; animation-delay: 3s; }
         .blob-3 { width: 200px; height: 200px; background: #06b6d4; top: 45%; left: 30%; animation-delay: 1.5s; }
         @keyframes float {
             0%, 100% { transform: translateY(0) scale(1); }
