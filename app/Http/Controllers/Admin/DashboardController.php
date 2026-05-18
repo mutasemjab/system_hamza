@@ -17,7 +17,13 @@ class DashboardController extends Controller
         $totalUsers         = User::count();
         $totalCollected     = Subscription::sum('paid_amount');
         $totalPending       = Subscription::selectRaw('SUM(total_amount - paid_amount) as r')->value('r') ?? 0;
-        $lateSubscriptions  = Subscription::where('status', 'late')->with('player')->latest()->limit(5)->get();
+        $lateSubscriptions    = Subscription::where('status', 'late')->with('player')->latest()->limit(5)->get();
+        $expiredSubscriptions = Subscription::where('status', 'expired')
+            ->with('player')
+            ->orderByDesc('end_date')
+            ->limit(8)
+            ->get();
+        $expiredCount = Subscription::where('status', 'expired')->count();
         $recentPlayers      = Player::with('subscription')->latest()->limit(6)->get();
 
         // Upcoming scheduled sessions
@@ -57,6 +63,8 @@ class DashboardController extends Controller
             'totalCollected',
             'totalPending',
             'lateSubscriptions',
+            'expiredSubscriptions',
+            'expiredCount',
             'recentPlayers',
             'socialUpcoming',
             'socialPendingCount',

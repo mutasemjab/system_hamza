@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Every morning at 07:00 — expire overdue subscriptions
+        $schedule->command('subscriptions:expire')->dailyAt('07:00');
     }
 
     /**

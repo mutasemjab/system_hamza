@@ -38,15 +38,56 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="stat-card stat-amber">
-            <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+        <a href="{{ route('subscriptions.index', ['status' => 'expired']) }}" class="stat-card stat-expired d-block text-decoration-none">
+            <div class="stat-card-icon"><i class="fas fa-calendar-times"></i></div>
             <div>
-                <div class="stat-card-value">{{ $totalUsers }}</div>
-                <div class="stat-card-label">المستخدمون</div>
+                <div class="stat-card-value">{{ $expiredCount }}</div>
+                <div class="stat-card-label">اشتراكات منتهية</div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
+
+{{-- Expired Subscriptions Alert --}}
+@if($expiredSubscriptions->count())
+<div class="expired-banner mb-4">
+    <div class="expired-banner-icon"><i class="fas fa-calendar-times"></i></div>
+    <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:#991b1b;margin-bottom:10px">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            اشتراكات منتهية — يحتاجون تجديد
+        </div>
+        <div class="expired-list">
+            @foreach($expiredSubscriptions as $sub)
+            <div class="expired-chip">
+                <div class="expired-chip-avatar">{{ $sub->player?->initials }}</div>
+                <div style="flex:1;min-width:0">
+                    <div style="font-size:12.5px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                        {{ $sub->player?->full_name }}
+                    </div>
+                    <div style="font-size:11px;color:#dc2626;margin-top:1px">
+                        انتهى {{ $sub->end_date?->diffForHumans() }}
+                    </div>
+                </div>
+                <a href="{{ route('subscriptions.edit', $sub) }}"
+                   class="expired-chip-btn" title="تعديل">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </div>
+            @endforeach
+        </div>
+        @if($expiredCount > 8)
+        <div style="margin-top:10px">
+            <a href="{{ route('subscriptions.index', ['status' => 'expired']) }}"
+               style="font-size:12px;color:#dc2626;font-weight:600;text-decoration:none">
+                عرض جميع الـ {{ $expiredCount }} اشتراك المنتهي
+                <i class="fas fa-arrow-left mr-1"></i>
+            </a>
+        </div>
+        @endif
+    </div>
+</div>
+@endif
 
 {{-- Birthday Reminders --}}
 @if($birthdayPlayers->count())
@@ -321,5 +362,83 @@
     color: #fff; font-size: 12px; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
 }
+
+/* ── Expired stat card ── */
+.stat-expired {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border-radius: var(--card-radius);
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 4px 20px rgba(220,38,38,.25);
+    transition: transform .22s, box-shadow .22s;
+    color: #fff;
+    text-decoration: none !important;
+    border: none;
+}
+.stat-expired:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 32px rgba(220,38,38,.35);
+    color: #fff;
+}
+.stat-expired .stat-card-icon {
+    background: rgba(255,255,255,.18);
+}
+
+/* ── Expired Banner ── */
+.expired-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: linear-gradient(135deg, #fff5f5, #fee2e2);
+    border: 1.5px solid #fecaca;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(239,68,68,.08);
+}
+.expired-banner-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(239,68,68,.3);
+}
+.expired-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+}
+.expired-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 8px 10px;
+    min-width: 160px;
+    max-width: 220px;
+    transition: box-shadow .15s;
+}
+.expired-chip:hover { box-shadow: 0 2px 10px rgba(239,68,68,.14); }
+.expired-chip-avatar {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.expired-chip-btn {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: #fee2e2;
+    color: #dc2626;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    text-decoration: none !important;
+    transition: background .15s;
+}
+.expired-chip-btn:hover { background: #fecaca; color: #b91c1c; }
 </style>
 @endsection
