@@ -55,7 +55,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('social.index') }}"
+                    <a href="{{ route('social.schedule') }}"
                        class="nav-link {{ request()->routeIs('social.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-photo-film"></i>
                         <p>{{ __('messages.Social_Media') }}</p>

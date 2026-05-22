@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\SocialContentController;
-use App\Http\Controllers\Admin\SocialQueueController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 /*
 |--------------------------------------------------------------------------
@@ -69,22 +68,15 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('subscriptions/{subscription}/freeze',   [SubscriptionController::class, 'freeze'])  ->name('subscriptions.freeze');
         Route::post('subscriptions/{subscription}/unfreeze', [SubscriptionController::class, 'unfreeze'])->name('subscriptions.unfreeze');
 
-        // Social — queues (index) + schedule
-        Route::get   ('social',                              [SocialQueueController::class,   'index'])        ->name('social.index');
-        Route::post  ('social/queues',                       [SocialQueueController::class,   'storeQueue'])   ->name('social.queues.store');
-        Route::delete('social/queues/{queue}',               [SocialQueueController::class,   'destroyQueue']) ->name('social.queues.destroy');
-        Route::post  ('social/queues/{queue}/entries',       [SocialQueueController::class,   'addEntries'])   ->name('social.queues.entries.add');
-        Route::delete('social/queues/entries/{entry}',       [SocialQueueController::class,   'destroyEntry']) ->name('social.queues.entries.destroy');
-        Route::patch ('social/queues/entries/{entry}/toggle',[SocialQueueController::class,   'toggleEntry'])  ->name('social.queues.entries.toggle');
-        Route::patch ('social/queues/{queue}/mark-all-done', [SocialQueueController::class,   'markAllDone'])  ->name('social.queues.markAllDone');
-        Route::patch ('social/queues/{queue}/reset',         [SocialQueueController::class,   'resetQueue'])   ->name('social.queues.reset');
-
-        Route::get   ('social/schedule',                     [SocialContentController::class, 'scheduleForm'])    ->name('social.schedule');
-        Route::post  ('social/schedule',                     [SocialContentController::class, 'scheduleGenerate'])->name('social.schedule.generate');
-        Route::post  ('social/entries',                      [SocialContentController::class, 'store'])           ->name('social.store');
-        Route::patch ('social/entries/{social}',             [SocialContentController::class, 'update'])          ->name('social.update');
-        Route::delete('social/entries/{social}',             [SocialContentController::class, 'destroy'])         ->name('social.destroy');
-        Route::patch ('social/entries/{social}/mark-published',[SocialContentController::class,'markPublished'])  ->name('social.markPublished');
+        // Social
+        Route::get  ('social',                         [SocialContentController::class, 'scheduleForm'])    ->name('social.index');
+        Route::get  ('social/schedule',                [SocialContentController::class, 'scheduleForm'])    ->name('social.schedule');
+        Route::post ('social/schedule',                [SocialContentController::class, 'scheduleGenerate'])->name('social.schedule.generate');
+        Route::post ('social/mark-all-today',          [SocialContentController::class, 'markAllToday'])   ->name('social.markAllToday');
+        Route::post ('social',                         [SocialContentController::class, 'store'])           ->name('social.store');
+        Route::patch('social/{social}',                [SocialContentController::class, 'update'])          ->name('social.update');
+        Route::delete('social/{social}',               [SocialContentController::class, 'destroy'])         ->name('social.destroy');
+        Route::patch('social/{social}/mark-published', [SocialContentController::class, 'markPublished'])   ->name('social.markPublished');
     });
 });
 

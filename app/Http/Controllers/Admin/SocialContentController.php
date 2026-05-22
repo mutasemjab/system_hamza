@@ -10,23 +10,20 @@ use Illuminate\Http\Request;
 
 class SocialContentController extends Controller
 {
-    public function index()
-    {
-        return redirect()->route('social.schedule');
-    }
-
     /* ── Main Schedule Page ── */
 
     public function scheduleForm()
     {
         $players = Player::orderBy('full_name')->get();
 
-        $scheduled = SocialContent::with('player')
-            ->orderByDesc('scheduled_date')
-            ->orderByDesc('id')
-            ->paginate(50);
+        // Group entries by description so the view can render one card per type
+        $grouped = SocialContent::with('player')
+            ->orderBy('scheduled_date')
+            ->orderBy('id')
+            ->get()
+            ->groupBy('custom_description');
 
-        return view('admin.social.schedule', compact('players', 'scheduled'));
+        return view('admin.social.schedule', compact('players', 'grouped'));
     }
 
     /* ── Bulk Schedule Generator ── */
@@ -73,7 +70,7 @@ class SocialContentController extends Controller
         }
 
         if (empty($rows)) {
-            return redirect()->back()->with('error', 'لا يوجد أي يوم مطابق في النطاق المحدد');
+            return back()->with('error', 'لا يوجد أي يوم مطابق في النطاق المحدد');
         }
 
         SocialContent::insert($rows);
@@ -134,16 +131,40 @@ class SocialContentController extends Controller
             ->with('success', 'تم تحديث الجلسة');
     }
 
-    /* ── Mark Published ── */
+    /* ── Mark Published (supports AJAX) ── */
 
-    public function markPublished(SocialContent $social)
+    public function markPublished(Request $request, SocialContent $social)
     {
         $social->update([
             'status'       => 'published',
             'published_at' => now()->toDateString(),
         ]);
 
-        return redirect()->back()->with('success', 'تم تأكيد النشر');
+        if ($request->wantsJson()) {
+            return response()->json([
+                'status'       => 'published',
+                'published_at' => now()->format('d/m'),
+            ]);
+        }
+
+        return back()->with('success', 'تم تأكيد النشر');
+    }
+
+    /* ── Mark All Today for a description (AJAX only) ── */
+
+    public function markAllToday(Request $request)
+    {
+        $request->validate(['description' => 'required|string|max:255']);
+
+        $count = SocialContent::where('custom_description', $request->description)
+            ->whereDate('scheduled_date', Carbon::today())
+            ->where('status', '!=', 'published')
+            ->update([
+                'status'       => 'published',
+                'published_at' => now()->toDateString(),
+            ]);
+
+        return response()->json(['count' => $count]);
     }
 
     /* ── Delete ── */
@@ -151,6 +172,6 @@ class SocialContentController extends Controller
     public function destroy(SocialContent $social)
     {
         $social->delete();
-        return redirect()->back()->with('success', 'تم حذف الجلسة');
+        return back()->with('success', 'تم حذف الجلسة');
     }
 }
