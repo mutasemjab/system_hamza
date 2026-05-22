@@ -22,7 +22,7 @@ class SocialQueueController extends Controller
         $queues  = SocialQueue::with(['pendingEntries.player', 'publishedEntries.player'])
             ->orderBy('sort_order')
             ->get();
-        $players = Player::orderBy('name')->get();
+        $players = Player::orderBy('full_name')->get();
 
         return view('admin.social.queues', compact('queues', 'players'));
     }
