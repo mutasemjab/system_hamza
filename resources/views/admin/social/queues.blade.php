@@ -1,4 +1,4 @@
-@extends('admin.layouts.master')
+@extends('layouts.admin')
 
 @section('title', __('messages.Social_Media'))
 
@@ -21,12 +21,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
-    @endif
 
     @if($queues->isEmpty())
         <div class="empty-queues-state text-center py-5">
