@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Player;
 use App\Models\SocialContent;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SocialContentController extends Controller
@@ -14,69 +13,53 @@ class SocialContentController extends Controller
 
     public function scheduleForm()
     {
-        $players = Player::orderBy('full_name')->get();
-
-        // Group entries by description so the view can render one card per type
+        // Pending first (null published_at), then published ordered oldest → newest (newest at very bottom)
         $grouped = SocialContent::with('player')
-            ->orderBy('scheduled_date')
-            ->orderBy('id')
+            ->orderByRaw("ISNULL(published_at) DESC, published_at ASC, id ASC")
             ->get()
-            ->groupBy('custom_description');
+            ->groupBy(fn (SocialContent $e) => $e->custom_description);
 
-        return view('admin.social.schedule', compact('players', 'grouped'));
+        return view('admin.social.schedule', compact('grouped'));
     }
 
-    /* ── Bulk Schedule Generator ── */
+    /* ── Auto-generate group from active players ── */
 
     public function scheduleGenerate(Request $request)
     {
         $request->validate([
             'description' => 'required|string|max:255',
-            'player_ids'  => 'required|array|min:1',
-            'player_ids.*'=> 'exists:players,id',
-            'days'        => 'required|array|min:1',
-            'days.*'      => 'integer|between:0,6',
-            'start_date'  => 'required|date',
-            'end_date'    => 'required|date|after_or_equal:start_date',
             'notes'       => 'nullable|string|max:500',
         ]);
 
-        $playerIds   = $request->player_ids;
-        $days        = array_map('intval', $request->days);
         $description = trim($request->description);
         $notes       = $request->notes ? trim($request->notes) : null;
-        $start       = Carbon::parse($request->start_date)->startOfDay();
-        $end         = Carbon::parse($request->end_date)->startOfDay();
 
-        $rows        = [];
-        $playerIndex = 0;
-        $cursor      = $start->copy();
+        // All players whose subscription is not expired and not frozen
+        $players = Player::whereHas('subscription', function ($q) {
+            $q->where('is_frozen', false)->where('status', '!=', 'expired');
+        }, '>=', 1)->orderBy('full_name')->get();
 
-        while ($cursor->lte($end)) {
-            if (in_array($cursor->dayOfWeek, $days)) {
-                $rows[] = [
-                    'player_id'          => $playerIds[$playerIndex % count($playerIds)],
-                    'custom_description' => $description,
-                    'scheduled_date'     => $cursor->toDateString(),
-                    'status'             => 'pending',
-                    'notes'              => $notes,
-                    'published_at'       => null,
-                    'created_at'         => now(),
-                    'updated_at'         => now(),
-                ];
-                $playerIndex++;
-            }
-            $cursor->addDay();
+        if ($players->isEmpty()) {
+            return redirect()->route('social.schedule')->with('error', 'لا يوجد طلاب لديهم اشتراك فعال حالياً');
         }
 
-        if (empty($rows)) {
-            return back()->with('error', 'لا يوجد أي يوم مطابق في النطاق المحدد');
+        $rows = [];
+        foreach ($players as $player) {
+            $rows[] = [
+                'player_id'          => $player->id,
+                'custom_description' => $description,
+                'scheduled_date'     => null,
+                'status'             => 'pending',
+                'notes'              => $notes,
+                'published_at'       => null,
+                'created_at'         => now(),
+                'updated_at'         => now(),
+            ];
         }
 
         SocialContent::insert($rows);
 
-        return redirect()->route('social.schedule')
-            ->with('success', 'تم إنشاء ' . count($rows) . ' جلسة بنجاح');
+        return redirect()->route('social.schedule')->with('success', 'تم إنشاء قائمة "' . $description . '" بـ ' . count($rows) . ' طالب');
     }
 
     /* ── Single Entry Add ── */
@@ -86,22 +69,19 @@ class SocialContentController extends Controller
         $request->validate([
             'player_id'          => 'required|exists:players,id',
             'custom_description' => 'required|string|max:255',
-            'scheduled_date'     => 'required|date',
-            'status'             => 'required|in:pending,published',
             'notes'              => 'nullable|string|max:500',
         ]);
 
         SocialContent::create([
             'player_id'          => $request->player_id,
             'custom_description' => $request->custom_description,
-            'scheduled_date'     => $request->scheduled_date,
-            'status'             => $request->status,
+            'scheduled_date'     => null,
+            'status'             => 'pending',
             'notes'              => $request->notes,
-            'published_at'       => $request->status === 'published' ? now()->toDateString() : null,
+            'published_at'       => null,
         ]);
 
-        return redirect()->route('social.schedule')
-            ->with('success', 'تم إضافة الجلسة بنجاح');
+        return redirect()->route('social.schedule')->with('success', 'تم إضافة الجلسة بنجاح');
     }
 
     /* ── Edit ── */
@@ -111,27 +91,19 @@ class SocialContentController extends Controller
         $request->validate([
             'player_id'          => 'required|exists:players,id',
             'custom_description' => 'required|string|max:255',
-            'scheduled_date'     => 'required|date',
-            'status'             => 'required|in:pending,published',
             'notes'              => 'nullable|string|max:500',
         ]);
 
         $social->update([
             'player_id'          => $request->player_id,
             'custom_description' => $request->custom_description,
-            'scheduled_date'     => $request->scheduled_date,
-            'status'             => $request->status,
             'notes'              => $request->notes,
-            'published_at'       => $request->status === 'published'
-                ? ($social->published_at?->toDateString() ?? now()->toDateString())
-                : null,
         ]);
 
-        return redirect()->route('social.schedule')
-            ->with('success', 'تم تحديث الجلسة');
+        return redirect()->route('social.schedule')->with('success', 'تم تحديث الجلسة');
     }
 
-    /* ── Mark Published (supports AJAX) ── */
+    /* ── Mark Published — supports AJAX ── */
 
     public function markPublished(Request $request, SocialContent $social)
     {
@@ -141,30 +113,50 @@ class SocialContentController extends Controller
         ]);
 
         if ($request->wantsJson()) {
-            return response()->json([
-                'status'       => 'published',
-                'published_at' => now()->format('d/m'),
-            ]);
+            return response()->json(['status' => 'published']);
         }
 
-        return back()->with('success', 'تم تأكيد النشر');
+        return redirect()->route('social.schedule')->with('success', 'تم تأكيد النشر');
     }
 
-    /* ── Mark All Today for a description (AJAX only) ── */
+    /* ── Mark ALL pending for a description as published — AJAX ── */
 
-    public function markAllToday(Request $request)
+    public function markAll(Request $request)
     {
         $request->validate(['description' => 'required|string|max:255']);
 
-        $count = SocialContent::where('custom_description', $request->description)
-            ->whereDate('scheduled_date', Carbon::today())
+        SocialContent::where('custom_description', '=', $request->description)
             ->where('status', '!=', 'published')
             ->update([
                 'status'       => 'published',
                 'published_at' => now()->toDateString(),
             ]);
 
-        return response()->json(['count' => $count]);
+        return response()->json(['ok' => true]);
+    }
+
+    /* ── Reset all published in a description back to pending ── */
+
+    public function resetGroup(Request $request)
+    {
+        $request->validate(['description' => 'required|string|max:255']);
+
+        SocialContent::where('custom_description', '=', $request->description)
+            ->where('status', 'published')
+            ->update(['status' => 'pending', 'published_at' => null]);
+
+        return redirect()->route('social.schedule')->with('success', 'تم بدء جولة جديدة');
+    }
+
+    /* ── Delete entire group by description ── */
+
+    public function deleteGroup(Request $request)
+    {
+        $request->validate(['description' => 'required|string|max:255']);
+
+        SocialContent::where('custom_description', '=', $request->description)->delete();
+
+        return redirect()->route('social.schedule')->with('success', 'تم حذف القائمة.');
     }
 
     /* ── Delete ── */
@@ -172,6 +164,6 @@ class SocialContentController extends Controller
     public function destroy(SocialContent $social)
     {
         $social->delete();
-        return back()->with('success', 'تم حذف الجلسة');
+        return redirect()->route('social.schedule')->with('success', 'تم حذف الجلسة');
     }
 }

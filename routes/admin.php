@@ -72,7 +72,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get  ('social',                         [SocialContentController::class, 'scheduleForm'])    ->name('social.index');
         Route::get  ('social/schedule',                [SocialContentController::class, 'scheduleForm'])    ->name('social.schedule');
         Route::post ('social/schedule',                [SocialContentController::class, 'scheduleGenerate'])->name('social.schedule.generate');
-        Route::post ('social/mark-all-today',          [SocialContentController::class, 'markAllToday'])   ->name('social.markAllToday');
+        Route::post ('social/mark-all',                [SocialContentController::class, 'markAll'])        ->name('social.markAll');
+        Route::post ('social/reset-group',             [SocialContentController::class, 'resetGroup'])     ->name('social.resetGroup');
+        Route::post ('social/delete-group',            [SocialContentController::class, 'deleteGroup'])    ->name('social.deleteGroup');
         Route::post ('social',                         [SocialContentController::class, 'store'])           ->name('social.store');
         Route::patch('social/{social}',                [SocialContentController::class, 'update'])          ->name('social.update');
         Route::delete('social/{social}',               [SocialContentController::class, 'destroy'])         ->name('social.destroy');
