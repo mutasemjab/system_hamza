@@ -124,13 +124,13 @@
 @endif
 
 <div class="row">
-    {{-- Social Media Upcoming --}}
+    {{-- Social Media Pending --}}
     <div class="col-lg-7 mb-4">
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <i class="fas fa-photo-film text-accent mr-2"></i>
-                    <span class="card-title">الجلسات القادمة</span>
+                    <span class="card-title">قوائم السوشيال</span>
                     <span class="badge badge-secondary ml-2">{{ $socialPendingCount }} قادم · {{ $socialPublishedCount }} منشور</span>
                 </div>
                 <a href="{{ route('social.schedule') }}" class="btn btn-secondary btn-sm">
@@ -138,19 +138,8 @@
                 </a>
             </div>
             <div class="card-body" style="padding:12px 22px !important">
-                @forelse($socialUpcoming as $item)
-                @php
-                    $arabicDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-                @endphp
+                @forelse($socialPendingSample as $item)
                 <div class="social-upcoming-row">
-                    <div style="min-width:70px;text-align:center">
-                        <div style="font-size:13px;font-weight:700;color:var(--text-primary)">
-                            {{ $item->scheduled_date?->format('m/d') }}
-                        </div>
-                        <div style="font-size:11px;color:var(--text-muted)">
-                            {{ $item->scheduled_date ? $arabicDays[$item->scheduled_date->dayOfWeek] : '' }}
-                        </div>
-                    </div>
                     <div class="late-sub-avatar" style="background:linear-gradient(135deg,#0c3c2c,#1a7a55)">
                         {{ $item->player?->initials }}
                     </div>
@@ -158,16 +147,12 @@
                         <div style="font-size:13px;font-weight:600">{{ $item->player?->full_name }}</div>
                         <div style="font-size:12px;color:var(--text-muted)">{{ $item->custom_description }}</div>
                     </div>
-                    @if($item->scheduled_date && $item->scheduled_date->isToday())
-                        <span class="badge badge-success">اليوم</span>
-                    @elseif($item->scheduled_date && $item->scheduled_date->isTomorrow())
-                        <span class="badge badge-primary">بكرا</span>
-                    @endif
+                    <span class="badge badge-secondary">قادم</span>
                 </div>
                 @empty
                 <div class="text-center py-4">
-                    <i class="fas fa-calendar-check" style="font-size:32px;color:var(--success);opacity:.5;display:block;margin-bottom:8px"></i>
-                    <span style="font-size:13px;color:var(--text-muted)">لا توجد جلسات قادمة</span>
+                    <i class="fas fa-check-circle" style="font-size:32px;color:var(--success);opacity:.5;display:block;margin-bottom:8px"></i>
+                    <span style="font-size:13px;color:var(--text-muted)">كل القوائم جاهزة</span>
                 </div>
                 @endforelse
             </div>

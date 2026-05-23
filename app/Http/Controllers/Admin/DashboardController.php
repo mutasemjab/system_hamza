@@ -26,16 +26,15 @@ class DashboardController extends Controller
         $expiredCount = Subscription::where('status', 'expired')->count();
         $recentPlayers      = Player::with('subscription')->latest()->limit(6)->get();
 
-        // Upcoming scheduled sessions
-        $socialUpcoming = SocialContent::with('player')
-            ->where('status', 'pending')
-            ->where('scheduled_date', '>=', Carbon::today())
-            ->orderBy('scheduled_date')
+        $socialPendingCount   = SocialContent::where('status', '=', 'pending', 'and')->count();
+        $socialPublishedCount = SocialContent::where('status', '=', 'published', 'and')->count();
+
+        // Sample of pending entries grouped by description for dashboard overview
+        $socialPendingSample = SocialContent::with('player')
+            ->where('status', '=', 'pending', 'and')
+            ->latest()
             ->limit(6)
             ->get();
-
-        $socialPendingCount   = SocialContent::where('status', 'pending')->count();
-        $socialPublishedCount = SocialContent::where('status', 'published')->count();
 
         // Birthday reminders — players whose birthday falls within the next 7 days
         $today = Carbon::today();
@@ -66,9 +65,9 @@ class DashboardController extends Controller
             'expiredSubscriptions',
             'expiredCount',
             'recentPlayers',
-            'socialUpcoming',
             'socialPendingCount',
             'socialPublishedCount',
+            'socialPendingSample',
             'birthdayPlayers',
             'frozenCount'
         ));

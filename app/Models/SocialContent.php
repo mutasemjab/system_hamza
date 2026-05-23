@@ -10,13 +10,11 @@ class SocialContent extends Model
     use HasFactory;
 
     protected $fillable = [
-        'player_id', 'custom_description', 'scheduled_date',
-        'status', 'published_at', 'notes',
+        'player_id', 'custom_description', 'status', 'published_at', 'notes',
     ];
 
     protected $casts = [
-        'published_at'   => 'date',
-        'scheduled_date' => 'date',
+        'published_at' => 'date',
     ];
 
     public function player()

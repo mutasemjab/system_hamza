@@ -11,10 +11,9 @@ return new class extends Migration
         Schema::create('social_contents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('player_id')->constrained('players')->onDelete('cascade');
-            $table->enum('content_type', ['story', 'player_feature', 'anime_version', 'exercise_champion', 'carousel']);
-            $table->enum('status', ['pending', 'next', 'published'])->default('pending');
+            $table->string('custom_description', 255);
+            $table->string('status', 20)->default('pending');
             $table->date('published_at')->nullable();
-            $table->unsignedInteger('sort_order')->default(0);
             $table->text('notes')->nullable();
             $table->timestamps();
         });

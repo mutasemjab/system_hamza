@@ -40,7 +40,7 @@ class SocialContentController extends Controller
         }, '>=', 1)->orderBy('full_name')->get();
 
         if ($players->isEmpty()) {
-            return redirect()->route('social.schedule')->with('error', 'لا يوجد طلاب لديهم اشتراك فعال حالياً');
+            return redirect(route('social.schedule'))->with('error', 'لا يوجد طلاب لديهم اشتراك فعال حالياً');
         }
 
         $rows = [];
@@ -48,7 +48,6 @@ class SocialContentController extends Controller
             $rows[] = [
                 'player_id'          => $player->id,
                 'custom_description' => $description,
-                'scheduled_date'     => null,
                 'status'             => 'pending',
                 'notes'              => $notes,
                 'published_at'       => null,
@@ -59,7 +58,7 @@ class SocialContentController extends Controller
 
         SocialContent::insert($rows);
 
-        return redirect()->route('social.schedule')->with('success', 'تم إنشاء قائمة "' . $description . '" بـ ' . count($rows) . ' طالب');
+        return redirect(route('social.schedule'))->with('success', 'تم إنشاء قائمة "' . $description . '" بـ ' . count($rows) . ' طالب');
     }
 
     /* ── Single Entry Add ── */
@@ -75,13 +74,12 @@ class SocialContentController extends Controller
         SocialContent::create([
             'player_id'          => $request->player_id,
             'custom_description' => $request->custom_description,
-            'scheduled_date'     => null,
             'status'             => 'pending',
             'notes'              => $request->notes,
             'published_at'       => null,
         ]);
 
-        return redirect()->route('social.schedule')->with('success', 'تم إضافة الجلسة بنجاح');
+        return redirect(route('social.schedule'))->with('success', 'تم إضافة الجلسة بنجاح');
     }
 
     /* ── Edit ── */
@@ -100,7 +98,7 @@ class SocialContentController extends Controller
             'notes'              => $request->notes,
         ]);
 
-        return redirect()->route('social.schedule')->with('success', 'تم تحديث الجلسة');
+        return redirect(route('social.schedule'))->with('success', 'تم تحديث الجلسة');
     }
 
     /* ── Mark Published — supports AJAX ── */
@@ -116,7 +114,7 @@ class SocialContentController extends Controller
             return response()->json(['status' => 'published']);
         }
 
-        return redirect()->route('social.schedule')->with('success', 'تم تأكيد النشر');
+        return redirect(route('social.schedule'))->with('success', 'تم تأكيد النشر');
     }
 
     /* ── Mark ALL pending for a description as published — AJAX ── */
@@ -126,7 +124,7 @@ class SocialContentController extends Controller
         $request->validate(['description' => 'required|string|max:255']);
 
         SocialContent::where('custom_description', '=', $request->description)
-            ->where('status', '!=', 'published')
+            ->whereNotIn('status', ['published'])
             ->update([
                 'status'       => 'published',
                 'published_at' => now()->toDateString(),
@@ -142,10 +140,10 @@ class SocialContentController extends Controller
         $request->validate(['description' => 'required|string|max:255']);
 
         SocialContent::where('custom_description', '=', $request->description)
-            ->where('status', 'published')
+            ->where('status', '=', 'published', 'and')
             ->update(['status' => 'pending', 'published_at' => null]);
 
-        return redirect()->route('social.schedule')->with('success', 'تم بدء جولة جديدة');
+        return redirect(route('social.schedule'))->with('success', 'تم بدء جولة جديدة');
     }
 
     /* ── Delete entire group by description ── */
@@ -156,7 +154,7 @@ class SocialContentController extends Controller
 
         SocialContent::where('custom_description', '=', $request->description)->delete();
 
-        return redirect()->route('social.schedule')->with('success', 'تم حذف القائمة.');
+        return redirect(route('social.schedule'))->with('success', 'تم حذف القائمة.');
     }
 
     /* ── Delete ── */
@@ -164,6 +162,6 @@ class SocialContentController extends Controller
     public function destroy(SocialContent $social)
     {
         $social->delete();
-        return redirect()->route('social.schedule')->with('success', 'تم حذف الجلسة');
+        return redirect(route('social.schedule'))->with('success', 'تم حذف الجلسة');
     }
 }
